@@ -1,0 +1,483 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : Mobile_Utils
+ major_version : 30
+ minor_version : 0
+ type : 7
+ description : ""
+ subtype : 0
+procedure_set :
+ identifier : 0x18c3d0f5014288d8
+ internal_properties : HgAAAB4AAABGLu41kG7fjQV3iS4F72qmnKaNh5694reolNKIW0iw
+ code_elements :
+  type_code : 31
+  p_codes : []
+  procedures :
+   -
+     name : CheckNetworkStatus
+     procedure_id : 1784499653845426217
+     type_code : 15
+     code : |1+
+      procédure CheckNetworkStatus()
+      renvoyer  InternetConnecté()
+     type : 458752
+   -
+     name : HandlePermissions
+     procedure_id : 1784499679615300857
+     type_code : 15
+     code : |1+
+      procédure HandlePermissions()
+      
+     type : 458752
+   -
+     name : ManageBackgroundMode
+     procedure_id : 1784499696795240045
+     type_code : 15
+     code : |1+
+      procédure ManageBackgroundMode()
+      
+     type : 458752
+   -
+     name : Chiffrer_AES256
+     procedure_id : 1784556042466639006
+     type_code : 15
+     code : |1-
+      procédure Chiffrer_AES256(LOCAL _sMessageAChiffrer est une chaîne,LOCAL _sCleBase64 est une chaîne)
+      
+      LOCAL
+      buffCle					est un Buffer
+      buffMessageAChiffrer	est une Buffer	//Message en clair à chiffrer
+      buffContenuChiffre		est un Buffer	//Vecteur d'initialisation + message chiffrés
+      //	bufIV					est un Buffer	//Partie chiffrée du vecteur d'initialisation
+      //	bufDonnees				est un Buffer	//Partie chiffrée du message
+      sMessageChiffreBase64	est une chaîne ANSI
+      
+      //Je décode la clé depuis l'encode base64
+      buffCle					= Décode(_sCleBase64,encodeBASE64)
+      //Je passe le message d'un encodage ANSI à un encodage UTF-8
+      buffMessageAChiffrer	= ChaîneVersUTF8(_sMessageAChiffrer)
+      //Je chiffre le message à l'aide de la clé
+      buffContenuChiffre		= CrypteStandard(buffMessageAChiffrer,buffCle,crypteAES256,crypteCBC,cryptePaddingPKCS)
+      //Récupérer la partie chiffrée du vecteur d'initialisation
+      bufIV		est un Buffer					= buffContenuChiffre[[ À 16]]
+      //Récupérer la partie chiffrée des données
+      bufDonnees	est un Buffer					= buffContenuChiffre[[16+1 À]]
+      //J'encode les deux parties en base64
+      sMessageChiffreBase64	= Encode(buffContenuChiffre,encodeBASE64SansRC)
+      
+      RENVOYER sMessageChiffreBase64
+     type : 458752
+   -
+     name : Dechiffrer_AES256
+     procedure_id : 1784556240035245361
+     type_code : 15
+     code : |1+
+      procédure Dechiffrer_AES256(LOCAL _sMessageChiffreBase64 est une chaîne ANSI ,
+      LOCAL _sCleBase64 est une chaîne ANSI,
+      )
+      LOCAL
+      buffCle					est un Buffer
+      buffMessageChiffre		est un Buffer
+      buffMessageDechiffre	est un Buffer
+      sMessageDechiffre		est une chaîne
+      //bufIV					est un Buffer
+      
+      // Décodage Base64
+      buffCle					= Décode(_sCleBase64, encodeBASE64)
+      buffMessageChiffre		= Décode(_sMessageChiffreBase64, encodeBASE64)
+      
+      // Décryptage avec IV explicite (syntaxe étendue WinDev)
+      buffMessageDechiffre	= DécrypteStandard(buffMessageChiffre, buffCle, crypteAES256, crypteCBC, cryptePaddingPKCS)
+      
+      // Conversion UTF-8 -> ANSI
+      sMessageDechiffre		= UTF8VersChaîne(buffMessageDechiffre, alphabetAnsi)
+      
+      RENVOYER sMessageDechiffre
+      
+      
+     type : 458752
+   -
+     name : GenererCleSHA256_Base64
+     procedure_id : 1784556592222645680
+     type_code : 15
+     code : |1+
+      procédure GenererCleSHA256_Base64(_sMotDePasse est une chaîne ANSI)
+      
+      LOCAL
+      buffCle		est un Buffer	//Clé de chiffrement
+      sCleBase64	est une chaîne	//Clé de chiffrement encodée en base64
+      
+      //Pour une meilleure sécurité, je vais générer la clé en hachant un mot de passe avec un algorithme de hachage de la famille SHA-1
+      buffCle		= HashChaîne(HA_HMAC_SHA_256,_sMotDePasse,_sMotDePasse)
+      
+      
+      //Pour des raisons d’inter-compatibilité Windev / JAVA, j'encode le résultat du hachage en base64.
+      sCleBase64	= Encode(buffCle,encodeBASE64)
+      RENVOYER sCleBase64
+      
+     type : 458752
+   -
+     name : ValiderFormatJWT
+     procedure_id : 1785282201195751856
+     type_code : 15
+     code : |1-
+      procédure ValiderFormatJWT(sToken est une chaîne) : booléen
+      
+      // Vérifier le format basique (3 parties séparées par des points)
+      tabParties est un tableau de chaîne
+      
+      sToken.VersTableau(tabParties,".")
+      
+      
+      SI tabParties..Occurrence <> 3 ALORS
+      	renvoyer  Faux
+      FIN
+      
+      // Vérifier que chaque partie est en Base64
+      POUR i = 1 À 3
+      	SI Taille(tabParties[i]) = 0 ALORS
+      		RENVOYER Faux
+      	FIN
+      FIN
+      
+      RENVOYER Vrai
+     type : 458752
+   -
+     name : InitialiserWebSocket
+     procedure_id : 1785969718053638788
+     type_code : 15
+     code : |1+
+      procédure InitialiserWebSocket(sCleChiffrement est une chaîne)
+      
+      // Créer le gestionnaire de messages avec Pattern Strategy
+     type : 458752
+   -
+     name : AjouterUtilisateurDansListe
+     procedure_id : 1785972840510204055
+     type_code : 15
+     code : |1-
+      procédure AjouterUtilisateurDansListe(sNomUtilisateur est une chaîne)
+      
+      SI FenEtat(FEN_Chat)= Actif ALORS
+      {
+      //
+      //	nOccurence est un entier = FI_USERS.LST_Utilisateurs.Cherche(sNomUtilisateur,Vrai)
+      //	si nOccurence > 0 alors retour
+      //
+      //	FI_USERS.LST_Utilisateurs.Ajoute(sNomUtilisateur)
+      //	FI_USERS.LIB_NombreUtilisateurs = "Utilisateurs connectés (" + FI_USERS.LST_Utilisateurs.Occurrence() + ")"
+      
+      	WriteLogMobile("Utilisateur ajouté à la liste: " + sNomUtilisateur)
+      }
+     type : 458752
+   -
+     name : AfficherNotification
+     procedure_id : 1786031007275732735
+     type_code : 15
+     code : |1-
+      procédure AfficherNotification(sMessage est une chaîne, sUtilisateur est une chaine = "")
+      
+      
+      	si sUtilisateur<>gAuth.GetUsername alors
+      	{
+      		sMessageFormat est une chaîne = "[" + HeureVersChaine(HeureSys(), "HH:MM") + "] *** " + sMessage + " ***"
+      		notif est une Notification
+      		notif.Titre = sMessageFormat
+      		notif.Ajoute()
+      	}
+      
+      
+      
+      	WriteLogMobile("Notification affichée: " + sMessage)
+     type : 458752
+   -
+     name : SupprimerUtilisateurDeLaListe
+     procedure_id : 1786032484744957600
+     type_code : 15
+     code : |1-
+      procédure SupprimerUtilisateurDeLaListe(sNomUtilisateur est une chaîne)
+      // Supprimer l'utilisateur de la liste UI
+      //nPosition est un entier = ListeCherche(LST_Utilisateurs, sNomUtilisateur)
+      //SI nPosition > 0 ALORS
+      //	ListeSupprime(LST_Utilisateurs, nPosition)
+      //FIN
+      SI FenEtat(FEN_Chat)=Actif ALORS
+      	{
+      
+      		//nOccurence est un entier = FI_USERS.LST_Utilisateurs.Cherche(sNomUtilisateur,Vrai)
+      		//FI_USERS.LST_Utilisateurs.Supprime(nOccurence)
+      		//FI_USERS.LIB_NombreUtilisateurs = "Utilisateurs connectés (" + FI_USERS.LST_Utilisateurs.Occurrence() + ")"
+      
+      
+      		WriteLogMobile("Utilisateur ajouté à la liste: " + sNomUtilisateur)
+      }
+     type : 458752
+   -
+     name : AfficherMessage
+     procedure_id : 1786033605731617695
+     type_code : 15
+     code : |1+
+      procédure AfficherMessage(sExpediteur est une chaîne ANSI, sTexte est une chaîne ANSI, sHorodatage est une chaîne ANSI)
+      // Formater et afficher le message dans l'interface
+      sMessageFormat est une chaîne ansi = ChaîneConstruit("[%1] %2: %3", sHorodatage, sExpediteur, sTexte)
+      //ListeAjoute(LST_Messages, sMessageFormat)
+      WriteLogMobile(sMessageFormat)
+      // Scroll automatique vers le bas
+      //LST_Messages..Occurrence = ListeOccurrence(LST_Messages)
+      
+      si FenEtat(FEN_Chat)=Actif alors
+      {
+      	FEN_Chat.AjouterMessage(sExpediteur,sTexte)
+      }
+     type : 458752
+   -
+     name : MettreAJourListeUtilisateurs
+     procedure_id : 1786034322991388694
+     type_code : 15
+     code : |1-
+      procédure MettreAJourListeUtilisateurs(tabUtilisateurs est un tableau de chaînes ANSI)
+      // Vider et remplir la liste des utilisateurs
+      //ListeSupprimeTout(LST_Utilisateurs)
+      POUR TOUT sUtilisateur DE tabUtilisateurs
+      	//ListeAjoute(LST_Utilisateurs, sUtilisateur)
+      FIN
+     type : 458752
+   -
+     name : AfficherErreur
+     procedure_id : 1786035474042826408
+     type_code : 15
+     code : |1-
+      procédure AfficherErreur(sMessageErreur est une chaîne ANSI)
+      
+      // Afficher dans l'interface
+      //SI FenExiste(FEN_Chat) ALORS
+      //	sMessageFormat est une chaîne = "[ERREUR] " + sMessageErreur
+      //	ListeAjoute(FEN_Chat.LST_Messages, sMessageFormat)
+      //	FEN_Chat.LST_Messages..Occurrence = ListeOccurrence(FEN_Chat.LST_Messages)
+      //FIN
+      
+      // Afficher un toast pour l'utilisateur
+      ToastAffiche(sMessageErreur, toastLong)
+      
+      // Optionnel : vibrer pour alerter
+      //Vibrer(300)
+      VibrationDéclenche(1s)
+      
+      WriteLogMobile("Erreur affichée: " + sMessageErreur)
+     type : 458752
+   -
+     name : AfficherIndicateurSaisie
+     procedure_id : 1786037346648938350
+     type_code : 15
+     code : |1-
+      procédure AfficherIndicateurSaisie(sUtilisateur est une chaîne)
+      // Afficher que l'utilisateur est en train de taper
+      //LIB_IndicateurSaisie..Texte		= ChaîneConstruit("%1 est en train d'écrire...", sUtilisateur)
+      //LIB_IndicateurSaisie..Visible	= Vrai
+     type : 458752
+   -
+     name : EnvoyerViaWebSocket
+     procedure_id : 1786064439303116782
+     type_code : 15
+     code : |1-
+      procédure EnvoyerViaWebSocket(sMessageJSON est une chaîne ANSI)
+      
+      
+      SI gWebSocket <> Null ET gWebSocket.IsConnected ALORS
+      	SI PAS gWebSocket:SendMessage(ChaîneVersJSON(sMessageJSON)) ALORS
+      		WriteLogMobile("Erreur envoi WebSocket: " + gWebSocket.GetLastError)
+      		AfficherErreur("Erreur d'envoi du message")
+      	FIN
+      SINON
+      	WriteLogMobile("WebSocket non connecté")
+      	AfficherErreur("Connexion au chat perdue")
+      FIN
+     type : 458752
+   -
+     name : TraiterPieceJointe
+     procedure_id : 1788587479171297185
+     type_code : 15
+     code : |1+
+      procédure TraiterPieceJointe(pj est PieceJointe)
+      
+      // Traitement selon le type de fichier
+      SELON pj:Type
+      	CAS "image/jpeg", "image/png", "image/gif", "image/webp"
+      		TelechargerFichier(pj)
+      
+      	CAS "application/pdf"
+      		TelechargerFichier(pj)
+      
+      	CAS "text/plain", "application/json"
+      		TelechargerFichier(pj)
+      
+      	AUTRE CAS
+      		TelechargerFichier(pj)
+      FIN
+      
+      WriteLogMobile("Pièce jointe traitée: " + pj:NAME + " (" + pj:Type + ")")
+      
+      
+      
+     type : 458752
+   -
+     name : AfficherLienTelecharger
+     procedure_id : 1788587711099586075
+     type_code : 15
+     code : |1+
+      procédure AfficherLienTelecharger(pj est PieceJointe)
+      
+      SI FenEtat(FEN_Chat)= ACTIF ALORS
+      {
+      
+      	sMessage est une chaîne = "[FICHIER] " + pj:name + " - Appuyez pour télécharger"
+      
+      }
+      
+     type : 458752
+   -
+     name : TelechargerFichier
+     procedure_id : 1788621052938598917
+     type_code : 15
+     code : |1+
+      procédure TelechargerFichier(pj est PieceJointe)
+      
+      SI pj:name= "" OU pj:DataUrl = "" ALORS
+      	AfficherErreur("Fichier invalide")
+      	retour
+      FIN
+      
+      
+      	sRepDestination est une chaîne = frepexe() + "/ChatApp/Downloads/"
+      
+      	// Créer le répertoire si nécessaire
+      	SI PAS fRépExiste(sRepDestination) ALORS
+      		fRépCrée(sRepDestination)
+      	FIN
+      
+      	// Nettoyer le nom de fichier
+      	sNomFichier		est une chaîne	= NettoyerNomFichier(pj:name)
+      
+      	// Chemin complet du fichier
+      	sCheminFichier	est une chaîne	= sRepDestination + sNomFichier
+      
+      	// Gérer les doublons de noms
+      	sCheminFichier = GererDoublonsFichier(sCheminFichier)
+      
+      	// Afficher l'indicateur de téléchargement
+      	AfficherIndicateurConnexion("Téléchargement de " + sNomFichier + "...")
+      
+      	// Décoder les données selon le format
+      	SI Gauche(pj:DataUrl, 5) = "data:" ALORS
+      		// Format Data URL : data:type/subtype;base64,donnees
+      		TelechargerDepuisDataURL(pj:DataUrl, sCheminFichier)
+      	SINON SI Gauche(pj:DataUrl, 4) = "http" ALORS
+      		// URL HTTP/HTTPS
+      		TelechargerDepuisURL(pj:DataUrl, sCheminFichier)
+      	SINON
+      		// Données brutes en Base64
+      		TelechargerDepuisBase64(pj:DataUrl, sCheminFichier)
+      	FIN
+      	// Notifier le succès
+      	//AfficherToast("Fichier téléchargé : " + ExtractNomFichier(sCheminFichier), TOAST_LONG)
+      	WriteLogMobile("Fichier téléchargé: " + sCheminFichier)
+      
+      // Proposer d'ouvrir le fichier
+     type : 458752
+   -
+     name : NettoyerNomFichier
+     procedure_id : 1788621495320267728
+     type_code : 15
+     code : |1-
+      procédure NettoyerNomFichier(sNomFichier est une chaîne) : chaîne
+      
+      sNomNettoye est une chaîne = sNomFichier
+      
+      // Supprimer/remplacer les caractères interdits
+      sNomNettoye	= Remplace(sNomNettoye, "/", "_")
+      sNomNettoye	= Remplace(sNomNettoye, "\", "_")
+      sNomNettoye	= Remplace(sNomNettoye, ":", "_")
+      sNomNettoye	= Remplace(sNomNettoye, "*", "_")
+      sNomNettoye	= Remplace(sNomNettoye, "?", "_")
+      sNomNettoye	= Remplace(sNomNettoye, """", "_")
+      sNomNettoye	= Remplace(sNomNettoye, "<", "_")
+      sNomNettoye	= Remplace(sNomNettoye, ">", "_")
+      sNomNettoye	= Remplace(sNomNettoye, "|", "_")
+      
+      // Limiter la longueur
+      SI Taille(sNomNettoye) > 100 ALORS
+      	sExtension	est une chaîne	= fExtraitChemin(sNomNettoye, fExtension)
+      	sNomSansExt	est une chaîne	= fExtraitChemin(sNomNettoye, fFichier)
+      	sNomNettoye = Gauche(sNomSansExt, 95) + sExtension
+      FIN
+      
+      RENVOYER sNomNettoye
+     type : 458752
+   -
+     name : GererDoublonsFichier
+     procedure_id : 1788621851802636046
+     type_code : 15
+     code : |1-
+      procédure GererDoublonsFichier(sCheminOriginal est une chaîne) : chaîne
+      
+      SI PAS fFichierExiste(sCheminOriginal) ALORS
+      	RENVOYER sCheminOriginal
+      FIN
+      
+      sRepertoire	est une chaîne	= fExtraitChemin(sCheminOriginal, fRépertoire)
+      sNomSansExt	est une chaîne	= fExtraitChemin(sCheminOriginal, fFichier)
+      sExtension	est une chaîne	= fExtraitChemin(sCheminOriginal, fExtension)
+      
+      nCompteur	est un entier	= 1
+      sChemin		est une chaîne
+      
+      BOUCLE
+      	sChemin = sRepertoire + sNomSansExt + "_" + nCompteur + sExtension
+      	SI PAS fFichierExiste(sChemin) ALORS
+      		SORTIR
+      	FIN
+      	nCompteur++
+      FIN
+      
+      RENVOYER sChemin
+     type : 458752
+   -
+     name : AfficherIndicateurConnexion
+     procedure_id : 1788621993537966226
+     type_code : 15
+     code : |1+
+      procédure AfficherIndicateurConnexion(sMessage est une chaîne = "Connexion...")
+      
+      // Créer ou afficher la fenêtre de loading
+     type : 458752
+   -
+     name : Connect
+     procedure_id : 1789429967153551174
+     type_code : 15
+     code : |1-
+      procédure Connect(sWebSocketURL,sToken)
+      
+      SI gWebSocket.Connect(sWebSocketURL, sToken) ALORS
+      	WriteLogMobile("Connexion WebSocket initiée")
+      SINON
+      	ExécuteThreadPrincipal(()=>{
+      		ToastAffiche("Impossible de se connecter au chat")
+      	})
+      FIN
+      // Ouvrir la fenêtre de chat
+      ExécuteThreadPrincipal(()=>{
+      	OuvreFille(FEN_Chat)
+      })
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : HgAAAB4AAADXPUOq6bQdTI/fs1mC0I6nimWl2G84EsAbne5i32IM05uoRA==
+  original_name : COL_SansNom1
+resources :
+ string_res :
+  identifier : 0x18c3d0f401408231
+  internal_properties : HgAAAB4AAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : HgAAAB4AAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

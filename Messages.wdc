@@ -1,0 +1,74 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : Messages
+ major_version : 30
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x18c90f0e012ad5c8
+ internal_properties : HgAAAB4AAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      Messages est une Classe
+      	m_tabListe est un tableau de Message
+      PRIVÉ GLOBAL
+      	mg_pclMessage est un Messages dynamique
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1785975280052721096
+     type_code : 27
+     code : |1+
+      procédure PRIVÉ Constructeur()
+      
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1785975280052786632
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : GetInstance
+     procedure_id : 1785975743909755707
+     type_code : 12
+     code : |1-
+      procédure publique globale GetInstance()
+      
+      SectionCritiqueDébut()
+      SI ::mg_pclMessage=Null ALORS
+      	::mg_pclMessage = allouer Messages
+      FIN
+      SectionCritiqueFin()
+      RENVOYER ::mg_pclMessage
+     type : 458752
+   -
+     name : AjouteMessage
+     procedure_id : 1785975808334345120
+     type_code : 12
+     code : |1+
+      procédure AjouteMessage(clMessage est un Message)
+      m_tabListe.Ajoute(clMessage)
+      DemandeMiseAJourUI()
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : HgAAAB4AAADXPUOq6bQdTI/fs1mC0I6nimWl2G84EsAbne5i32IM05uoRA==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x18c90f080127bca3
+  internal_properties : HgAAAB4AAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : HgAAAB4AAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

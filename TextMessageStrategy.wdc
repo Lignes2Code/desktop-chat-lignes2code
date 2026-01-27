@@ -1,0 +1,372 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : TextMessageStrategy
+ major_version : 30
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x18c3d16a018251ff
+ internal_properties : HgAAAB4AAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      TextMessageStrategy est une Classe
+      	hérite IMessageStrategy
+      	m_sCleChiffrement est une chaîne ANSI
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1784500130590970367
+     type_code : 27
+     code : |1-
+      procédure Constructeur(sCle est une chaîne ANSI)
+      m_sCleChiffrement = sCle
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1784500130591035903
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : TraiterMessage
+     procedure_id : 1785975151203278469
+     type_code : 12
+     code : |1-
+      procédure TraiterMessage(LOCAL jsonMessage est un JSON) : booléen
+      SI PAS ValiderMessage(jsonMessage) ALORS RENVOYER Faux
+      
+      sExpediteur			est une chaîne ANSI	= jsonMessage.from
+      sTexte				est une chaîne ANSI	= jsonMessage.text
+      sHorodatage			est une chaîne ANSI	= jsonMessage.at
+      tabPiecesJointes	est un tableau de PieceJointe
+      
+      
+      // Gestion du déchiffrement si nécessaire
+      SI Gauche(sTexte, 4) = "ENC:" ALORS
+      	sTexteCrypte est une chaîne ANSI = Milieu(sTexte, 5)
+      	sTexte = Dechiffrer_AES256(sTexteCrypte, m_sCleChiffrement)
+      FIN
+      si ValiderMessagePJ(jsonMessage) alors
+      {
+      	Désérialise(tabPiecesJointes,jsonMessage.attachments,psdJSON)
+      	pour tout pj de tabPiecesJointes
+      	{
+      		TraiterPieceJointe(pj)
+      	}
+      }
+      
+      
+      // Affichage du message
+      AfficherMessage(sExpediteur, sTexte, sHorodatage)
+      
+      RENVOYER Vrai
+     type : 458752
+   -
+     name : ValiderMessage
+     procedure_id : 1785976066032443740
+     type_code : 12
+     code : |1-
+      procédure ValiderMessage(LOCAL jsonMessage est un JSON) : booléen
+      bExiste est un booléen = Faux
+      
+      POUR i = 1 _À_ jsonMessage..Membre.Occurrence
+      	bExiste = (jsonMessage..Membre[i]..Nom = "text")
+      	SI bExiste = Vrai ALORS
+      		RENVOYER bExiste
+      	FIN
+      FIN
+      
+      
+      RENVOYER bExiste
+     type : 458752
+   -
+     name : ObtenirType
+     procedure_id : 1785976130457033231
+     type_code : 12
+     code : |1+
+      procédure ObtenirType(): chaîne ANSI
+      RENVOYER "message"
+      
+      
+     type : 458752
+   -
+     name : ValiderMessagePJ
+     procedure_id : 1788625236244075822
+     type_code : 12
+     code : |1-
+      procédure ValiderMessagePJ(LOCAL jsonMessage est un JSON) : booléen
+      bExiste est un booléen = Faux
+      
+      POUR i = 1 _À_ jsonMessage..Membre.Occurrence
+      	bExiste = (jsonMessage..Membre[i]..Nom = "attachments")
+      	SI bExiste = Vrai ALORS
+      		RENVOYER bExiste
+      	FIN
+      FIN
+      
+      
+      RENVOYER bExiste
+     type : 458752
+   -
+     name : TraiterPieceJointe
+     procedure_id : 1788640105429166441
+     type_code : 12
+     code : |1+
+      procédure TraiterPieceJointe(pj est PieceJointe)
+      
+      // Traitement selon le type de fichier
+      SELON pj:type
+      	CAS "image/jpeg", "image/png", "image/gif", "image/webp"
+      		TelechargerFichier(pj)
+      
+      	CAS "application/pdf"
+      		TelechargerFichier(pj)
+      
+      	CAS "text/plain", "application/json"
+      		TelechargerFichier(pj)
+      
+      	AUTRE CAS
+      		TelechargerFichier(pj)
+      FIN
+      
+     type : 458752
+   -
+     name : TelechargerFichier
+     procedure_id : 1788640410371980650
+     type_code : 12
+     code : |1+
+      procédure TelechargerFichier(pj est PieceJointe)
+      
+      SI pj:name= "" OU pj:DataUrl = "" ALORS
+      	AfficherErreur("Fichier invalide")
+      	retour
+      FIN
+      
+      
+      	sRepDestination est une chaîne = frepexe() + "/ChatApp/Downloads/"
+      
+      	// Créer le répertoire si nécessaire
+      	SI PAS fRépExiste(sRepDestination) ALORS
+      		fRépCrée(sRepDestination)
+      	FIN
+      
+      	// Nettoyer le nom de fichier
+      	sNomFichier		est une chaîne	= NettoyerNomFichier(pj:name)
+      
+      	// Chemin complet du fichier
+      	sCheminFichier	est une chaîne	= sRepDestination + sNomFichier
+      
+      	// Gérer les doublons de noms
+      	sCheminFichier = GererDoublonsFichier(sCheminFichier)
+      
+      	// Afficher l'indicateur de téléchargement
+      	AfficherIndicateurConnexion("Téléchargement de " + sNomFichier + "...")
+      
+      	// Décoder les données selon le format
+      	SI Gauche(pj:DataUrl, 5) = "data:" ALORS
+      		// Format Data URL : data:type/subtype;base64,donnees
+      		TelechargerDepuisDataURL(pj:DataUrl, sCheminFichier)
+      	SINON SI Gauche(pj:DataUrl, 4) = "http" ALORS
+      		// URL HTTP/HTTPS
+      		TelechargerDepuisURL(pj:DataUrl, sCheminFichier)
+      	SINON
+      		// Données brutes en Base64
+      		TelechargerDepuisBase64(pj:DataUrl, sCheminFichier)
+      	FIN
+      	// Notifier le succès
+      	//AfficherToast("Fichier téléchargé : " + ExtractNomFichier(sCheminFichier), TOAST_LONG)
+      	WriteLogMobile("Fichier téléchargé: " + sCheminFichier)
+      
+      // Proposer d'ouvrir le fichier
+     type : 458752
+   -
+     name : TelechargerDepuisBase64
+     procedure_id : 1788640887114903204
+     type_code : 12
+     code : |1-
+      procédure TelechargerDepuisBase64(sDonneesBase64 est une chaîne, sCheminDestination est une chaîne)
+      
+      // Décoder directement
+      
+      nPosVirgule est un entier = Position(sDonneesBase64, ",")
+      
+      SI nPosVirgule = 0 ALORS
+      	//LEVER UNE EXCEPTION("Format Data URL invalide")
+      FIN
+      
+      // Extraire les données Base64
+      sDonneesBase64	= Droite(sDonneesBase64, Taille(sDonneesBase64) - nPosVirgule)
+      
+      
+      
+      
+      bufDonnees est un Buffer = Décode(sDonneesBase64, encodeBASE64)
+      
+      bufDonneesDecode est un Buffer = Dechiffrer_AES256(bufDonnees,m_sCleChiffrement)
+      
+      SI PAS fSauveBuffer(sCheminDestination, bufDonneesDecode) ALORS
+      	//LEVER UNE EXCEPTION("Impossible d'écrire le fichier: " + ErreurInfo())
+      fin
+     type : 458752
+   -
+     name : TelechargerDepuisURL
+     procedure_id : 1788641222123872209
+     type_code : 12
+     code : |1-
+      procédure TelechargerDepuisURL(sDataURL est une chaîne, sCheminDestination est une chaîne)
+      
+      // Format: data:type/subtype;base64,donnees
+      nPosVirgule est un entier = Position(sDataURL, ",")
+      
+      SI nPosVirgule = 0 ALORS
+      	//LEVER UNE EXCEPTION("Format Data URL invalide")
+      FIN
+      
+      // Extraire les données Base64
+      sDonneesBase64	est une chaîne	= Droite(sDataURL, Taille(sDataURL) - nPosVirgule)
+      
+      // Décoder et sauvegarder
+      bufDonnees		est un Buffer	= Décode(sDonneesBase64, encodeBASE64)
+      
+      SI PAS fSauveBuffer(sCheminDestination, bufDonnees) ALORS
+      	//LEVER UNE EXCEPTION("Impossible d'écrire le fichier: " + ErreurInfo())
+      Fin
+     type : 458752
+   -
+     name : TelechargerDepuisDataURL
+     procedure_id : 1788641685980383078
+     type_code : 12
+     code : |1-
+      procédure TelechargerDepuisDataURL(sDataURL est une chaîne, sCheminDestination est une chaîne)
+      
+      // Format: data:type/subtype;base64,donnees
+      nPosVirgule est un entier = Position(sDataURL, ",")
+      
+      SI nPosVirgule = 0 ALORS
+      	//LEVER UNE EXCEPTION("Format Data URL invalide")
+      FIN
+      
+      // Extraire les données Base64
+      sDonneesBase64	est une chaîne	= Droite(sDataURL, Taille(sDataURL) - nPosVirgule)
+      
+      // Décoder et sauvegarder
+      bufDonnees		est un Buffer	= Décode(sDonneesBase64, encodeBASE64)
+      
+      SI PAS fSauveBuffer(sCheminDestination, bufDonnees) ALORS
+      	//LEVER UNE EXCEPTION("Impossible d'écrire le fichier: " + ErreurInfo())
+      FIN
+     type : 458752
+   -
+     name : DecrypterPieceJointe
+     procedure_id : 1788644194241539887
+     type_code : 12
+     code : |1-
+      procédure DecrypterPieceJointe(pj est PieceJointe) : PieceJointe
+      // Décrypte une pièce jointe si elle est chiffrée
+      LOCAL
+      pjDecryptee		est PieceJointe
+      sDataDecryptee	est chaîne
+      nPosition		est entier
+      
+      
+      // Copie des propriétés de base
+      pjDecryptee = pj
+      
+      // Vérification si la pièce jointe est chiffrée
+      SI Contient(pj.type, "+enc:") ALORS
+      	// Type chiffré détecté (ex: "data+enc:image/jpeg;base64")
+      
+      	// Extraction du vrai type MIME
+      	nPosition = Position(pj.type, "+enc:")
+      	SI nPosition > 0 ALORS
+      		// Reconstruction du type sans "+enc"
+      		pjDecryptee.type = Gauche(pj.type, nPosition - 1) + Milieu(pj.type, nPosition + 4)
+      		// Ex: "data+enc:image/jpeg;base64" devient "data:image/jpeg;base64"
+      	FIN
+      
+      	// Décryptage des données
+      	sDataDecryptee = DecrypterDonneesBase64(pj.DataUrl)
+      	SI sDataDecryptee <> "" ALORS
+      		pjDecryptee.DataUrl = sDataDecryptee
+      
+      		// Log du décryptage
+      		Trace("[DECRYPT] Pièce jointe décryptée: " + pj.NAME)
+      		Trace("[DECRYPT] Type original: " + pj.type)
+      		Trace("[DECRYPT] Type décrypté: " + pjDecryptee.type)
+      	SINON
+      		// Erreur de décryptage
+      		Erreur("Impossible de décrypter la pièce jointe: " + pj.name)
+      		RENVOYER pj
+      	FIN
+      SINON
+      	// Pièce jointe non chiffrée, pas de traitement
+      	Trace("[DECRYPT] Pièce jointe non chiffrée: " + pj.name)
+      FIN
+      
+      RENVOYER pjDecryptee
+     type : 458752
+   -
+     name : DecrypterDonneesBase64
+     procedure_id : 1788644692457796687
+     type_code : 12
+     code : |1-
+      procédure DecrypterDonneesBase64(sDataUrl est chaîne) : chaîne
+      // Décrypte les données Base64 chiffrées d'une pièce jointe
+      LOCAL
+      sHeader, sDataBase64, sDataBinaire, sDataDecryptee	est chaîne
+      nPositionVirgule									est entier
+      bufferChiffre, bufferDecrypte						est Buffer
+      
+      
+      // Extraction des données Base64
+      nPositionVirgule = Position(sDataUrl, ",")
+      SI nPositionVirgule = 0 ALORS
+      	Erreur("Format de Data URL invalide")
+      	RENVOYER ""
+      FIN
+      
+      sHeader			= Gauche(sDataUrl, nPositionVirgule)
+      sDataBase64		= Droite(sDataUrl, Taille(sDataUrl) - nPositionVirgule)
+      
+      // Décodage Base64
+      bufferChiffre	= Décode(sDataBase64, encodeBASE64)
+      
+      SI Taille(bufferChiffre) = 0 ALORS
+      	Erreur("Impossible de décoder les données Base64")
+      	RENVOYER ""
+      FIN
+      
+      // Décryptage avec la clé de chiffrement
+      bufferDecrypte = Dechiffrer_AES256(bufferChiffre,m_sCleChiffrement)
+      SI Taille(bufferDecrypte) = 0 ALORS
+      	Erreur("Échec du décryptage des données")
+      	RENVOYER ""
+      FIN
+      
+      // Reconstruction de la Data URL décryptée
+      sDataBase64		= (bufferDecrypte)
+      sDataDecryptee	= sHeader + sDataBase64
+      
+      RENVOYER sDataDecryptee
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : HgAAAB4AAADXPUOq6bQdTI/fs1mC0I6nimWl2G84EsAbne5i32IM05uoRA==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x18c3d169017f4bb6
+  internal_properties : HgAAAB4AAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : HgAAAB4AAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,295 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CConfig
+ major_version : 30
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x18c3d122014a3758
+ internal_properties : HgAAAB4AAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      CConfig est une Classe{
+      
+      	PRIVÉ
+      		m_sServerURL			est une chaîne
+      		m_sWebSocketURL			est une chaîne
+      		m_nTimeout				est un entier
+      		m_bDebugMode			est un booléen
+      		m_sAppVersion			est une chaîne
+      		m_bWiFiOnly				est un booléen
+      		m_bNotificationsEnabled	est un booléen
+      
+      }
+      // Propriétés privées
+      
+      
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1784499821349648216
+     type_code : 27
+     code : |1+
+      procédure Constructeur()
+      
+      // Valeurs par défaut pour mobile
+      m_sServerURL			= "https://chat-ws.lignes2code.fr"  // IP local pour test
+      m_sWebSocketURL			= "wss://chat-ws.lignes2code.fr/ws"
+      m_nTimeout				= 15000  // 15 secondes (mobile)
+      m_bDebugMode			= Vrai
+      m_sAppVersion			= "1.0.0"
+      m_bWiFiOnly				= Faux
+      m_bNotificationsEnabled	= Vrai
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1784499821349713752
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : LoadConfigMobile
+     procedure_id : 1784503188615343701
+     type_code : 12
+     code : |1-
+      procédure LoadConfigMobile(): booléen
+      sFichierConfig est une chaîne = fRepExe() + [fSep] + "config.ini"
+      
+      // Créer le fichier par défaut si nécessaire
+      m_sServerURL			= ChargeParamètre("server_url", m_sServerURL)
+      m_sWebSocketURL			= ChargeParamètre("websocket_url", m_sWebSocketURL)
+      m_nTimeout				= Val(ChargeParamètre("timeout", NumériqueVersChaîne(m_nTimeout)))
+      m_bDebugMode			= (ChargeParamètre("debug_mode", "1") = "1")
+      m_bWiFiOnly				= (ChargeParamètre("wifi_only", "0") = "1")
+      m_bNotificationsEnabled	= (ChargeParamètre("notifications_enabled", "1") = "1")
+      
+      RENVOYER Vrai
+     type : 458752
+   -
+     name : SaveConfigMobile
+     procedure_id : 1784560462002908503
+     type_code : 12
+     code : |1-
+      procédure SaveConfigMobile()
+      
+      SauveParamètre("server_url", m_sServerURL)
+      SauveParamètre("websocket_url", m_sWebSocketURL)
+      SauveParamètre("timeout", NumériqueVersChaîne(m_nTimeout))
+      SauveParamètre("app_version", m_sAppVersion)
+      
+      SI m_bDebugMode ALORS
+      	SauveParamètre("debug_mode", "1")
+      SINON
+      	SauveParamètre("debug_mode", "0")
+      FIN
+      
+      SI m_bWiFiOnly ALORS
+      	SauveParamètre("wifi_only", "1")
+      SINON
+      	SauveParamètre("wifi_only", "0")
+      FIN
+      
+      SI m_bNotificationsEnabled ALORS
+      	SauveParamètre("notifications_enabled", "1")
+      SINON
+      	SauveParamètre("notifications_enabled", "0")
+      FIN
+      
+      RENVOYER Vrai
+     type : 458752
+   -
+     name : GetAuthTokenURL
+     procedure_id : 1784562819939978657
+     type_code : 12
+     code : |1-
+      procédure GetAuthTokenURL():chaîne 
+      
+       renvoyer  m_sServerURL + "/auth/token"
+     type : 458752
+   -
+     name : GetAuthRegisterURL
+     procedure_id : 1784562931609220201
+     type_code : 12
+     code : |1+
+      procédure GetAuthRegisterURL(): chaîne
+      
+      RENVOyEr m_sServerURL + "/auth/register"
+      
+     type : 458752
+   -
+     name : GetAuthVerifyURL
+     procedure_id : 1784563060458399934
+     type_code : 12
+     code : |1-
+      procédure GetAuthVerifyURL()
+      
+      RENVOYER m_sServerURL + "/auth/verify"
+     type : 458752
+   -
+     name : GetWebSocketURLWithToken
+     procedure_id : 1784563154947768342
+     type_code : 12
+     code : |1-
+      procédure GetWebSocketURLWithToken(sToken est une chaîne) : chaîne
+      
+      renvoyer m_sWebSocketURL + "?token=" + URLEncode(sToken)
+     type : 458752
+   -
+     name : CanConnect
+     procedure_id : 1784563373991151500
+     type_code : 12
+     code : |1+
+      procédure CanConnect(): booléen
+      
+      rENVOYER InternetConnecté()
+      
+     type : 458752
+   -
+     name : GetTimeout
+     procedure_id : 1784583160930472415
+     type_code : 12
+     code : |1+
+      procédure GetTimeout()
+      RENVOYER m_nTimeout
+     type : 458752
+  properties :
+   -
+     name : GetServerURL
+     identifier : 0x18c3d2d701a4e2ae
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique GetServerURL() : chaîne
+         
+         renvoyer m_sServerURL
+        type : 1966080
+     template_refs : []
+   -
+     name : GetWebSocketURL
+     identifier : 0x18c3d36e01ef3132
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique GetWebSocketURL() : chaîne ANSI
+         
+         renvoyer m_sWebSocketURL
+        type : 1966080
+     template_refs : []
+   -
+     name : GetTimeout
+     identifier : 0x18c3d38201f07d5e
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique GetTimeout() : entier
+         
+         renvoyer m_nTimeout
+        type : 1966080
+     template_refs : []
+   -
+     name : bDebugMode
+     identifier : 0x18c3d38e01f1ae12
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique bDebugMode() : booléen
+         
+         renvoyer m_bDebugMode
+        type : 1966080
+     template_refs : []
+   -
+     name : GetAppVersion
+     identifier : 0x18c3d3a101f2f618
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique GetAppVersion() : chaîne ANSI
+         
+         renvoyer m_sAppVersion
+        type : 1966080
+     template_refs : []
+   -
+     name : IsWiFiOnly
+     identifier : 0x18c3d3ae01f32b9f
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique IsWiFiOnly() : booléen
+         
+         renvoyer m_bWiFiOnly
+        type : 1966080
+     template_refs : []
+   -
+     name : AreNotificationsEnabled
+     identifier : 0x18c3d3bd01f465d9
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique AreNotificationsEnabled() : booléen
+         
+         renvoyer m_bNotificationsEnabled
+        type : 1966080
+     template_refs : []
+   -
+     name : SetServerURL
+     identifier : 0x18c3d3cc01f5a0bf
+     type_code : 103
+     p_codes :
+      -
+        code : |1+
+         procédure publique SetServerURL(sURL est chaîne ANSI)
+         m_sServerURL	= sURL
+         m_sWebSocketURL	= Remplace(sURL, "http://", "ws://") + "/ws"
+        type : 2031616
+     template_refs : []
+   -
+     name : SetWiFiOnly
+     identifier : 0x18c3d40a01f693ab
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique SetWiFiOnly(bWiFiOnly est booléen)
+         
+         m_bWiFiOnly=bWiFiOnly
+        type : 2031616
+     template_refs : []
+   -
+     name : bNotificationsEnabled
+     identifier : 0x18c3d41b01f7d44e
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique bNotificationsEnabled(bEnabled est booléen)
+         
+         m_bNotificationsEnabled=bEnabled
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : HgAAAB4AAADXPUOq6bQdTI/fs1mC0I6nimWl2G84EsAbne5i32IM05uoRA==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x18c3d120014730b1
+  internal_properties : HgAAAB4AAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : HgAAAB4AAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

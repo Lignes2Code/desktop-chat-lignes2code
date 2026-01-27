@@ -1,0 +1,613 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CWebSocket
+ major_version : 30
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x18c929f100fadd0d
+ internal_properties : HgAAAB4AAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      CWebSocket est une Classe
+      // Propriétés privées
+      PRIVÉ
+      	m_nSocketID				est un entier
+      	m_sURL					est une chaîne
+      	m_sToken				est une chaîne
+      	m_bConnected			est un booléen
+      	m_bReconnecting			est un booléen
+      	m_nReconnectAttempts	est un entier
+      	m_nMaxReconnectAttempts	est un entier
+      	m_nReconnectDelay		est un entier
+      	m_nPingTimer			est un entier
+      	m_sLastError			est une chaîne
+      	m_bBackgroundMode		est un booléen
+      	m_CallbackOnMessage		est une procédure
+      	m_CallbackOnConnect		est une procédure
+      	m_CallbackOnDisconnect	est une procédure
+      	m_CallbackOnError		est une procédure
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1786004842309475597
+     type_code : 27
+     code : |1+
+      procédure Constructeur()
+      m_nSocketID				= -1
+      m_sURL					= ""
+      m_sToken				= ""
+      m_bConnected			= Faux
+      m_bReconnecting			= Faux
+      m_nReconnectAttempts	= 0
+      m_nMaxReconnectAttempts	= MAX_RECONNECT_ATTEMPTS
+      m_nReconnectDelay		= DEFAULT_RECONNECT_DELAY
+      m_nPingTimer			= 0
+      m_sLastError			= ""
+      m_bBackgroundMode		= Faux
+      
+      // Callbacks par défaut (vides)
+      m_CallbackOnMessage		= Null
+      m_CallbackOnConnect		= Null
+      m_CallbackOnDisconnect	= Null
+      m_CallbackOnError		= Null
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1786004842309541133
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      Disconnect()
+      
+     type : 655360
+   -
+     name : Disconnect
+     procedure_id : 1786005173022295892
+     type_code : 12
+     code : |1+
+      procédure Disconnect()
+      SI m_nSocketID <> -1 ALORS
+      	// Arrêter le ping
+      	StopPing()
+      
+      	// Envoyer un message de départ si connecté
+      	SI m_bConnected ALORS
+      		SendLeaveMessage()
+      	FIN
+      
+      	// Fermer la connexion
+      	SocketFerme("chat")
+      	m_nSocketID = -1
+      
+      	WriteLogMobile("WebSocket déconnecté")
+      FIN
+      
+      m_bConnected			= Faux
+      m_bReconnecting			= Faux
+      m_nReconnectAttempts	= 0
+     type : 458752
+   -
+     name : StopPing
+     procedure_id : 1786005314756315681
+     type_code : 12
+     code : |1-
+      procédure StopPing()
+      
+      SI m_nPingTimer <> 0 ALORS
+      	FinTimerSys(m_nPingTimer)
+      	m_nPingTimer = 0
+      FIN
+     type : 458752
+   -
+     name : SendLeaveMessage
+     procedure_id : 1786005499439951799
+     type_code : 12
+     code : |1-
+      procédure SendLeaveMessage()
+      ToastAffiche("envoi du leave")
+      jsonMessage est un JSON
+      jsonMessage.type	= WS_TYPE_LEAVE
+      jsonMessage.user	= gAuth.GetUsername
+      
+      
+      
+      RENVOYER jsonMessage
+     type : 458752
+   -
+     name : SendMessage
+     internal_properties : HgAAAB4AAAAMKk0bUnppf9n/DdIx+pD12FdjGBpDdPouTXmKpwRX8VSK7s3EyvfwpbA1UoOIDFhQRWUvEtPmaHQL3DqP9EYkvNp92ZaY8pL88p/fEQhlXNEtBTP55g==
+     procedure_id : 1786006302603086914
+     type_code : 12
+     code : |1-
+      // Traitement automatique des exceptions :   exécuter le bloc de code CAS EXCEPTION:
+      //
+      procédure SendMessage(jsonMessage est un JSON) : booléen
+      
+      SI PAS m_bConnected  ALORS
+      	m_sLastError = "WebSocket non connecté"
+      	renvoyer Faux
+      FIN
+      
+      
+      sMessage	est une chaîne	= JSONVersChaîne(jsonMessage)
+      
+      bResult		est un booléen	= SocketEcrit("chat", sMessage)
+      
+      SI PAS bResult ALORS
+      	m_sLastError = "Erreur envoi message: " + ErreurInfo()
+      	WriteLogMobile("Erreur envoi WebSocket: " + ErreurInfo())
+      FIN
+      
+      renvoyer  bResult
+      CAS EXCEPTION:
+      m_sLastError = "Exception envoi message: " + ExceptionInfo()
+      WriteLogMobile("Exception envoi WebSocket: " + ExceptionInfo())
+      RENVOYER Faux
+     type : 458752
+   -
+     name : OnSocketConnect
+     procedure_id : 1786006805114377218
+     type_code : 12
+     code : |1-
+      procédure OnSocketConnect()
+      
+      WriteLogMobile("WebSocket connecté avec succès")
+      
+      m_bConnected			= Vrai
+      m_bReconnecting			= Faux
+      m_nReconnectAttempts	= 0
+      
+      // Démarrer le ping pour maintenir la connexion
+      StartPing()
+      
+      
+      // Envoyer automatiquement le message de join
+      SI gAuth.IsConnected() ALORS
+      	SendJoinMessage(gAuth.GetUsername)
+      FIN
+      
+      // Appeler le callback utilisateur
+      SI m_CallbackOnConnect <> Null ALORS
+      	ExécuteFonction(m_CallbackOnConnect)
+      FIN
+     type : 458752
+   -
+     name : StartPing
+     procedure_id : 1786006916783552946
+     type_code : 12
+     code : |1+
+      procédure StartPing()
+      
+      StopPing()  // Arrêter le ping existant
+      
+      // Ping toutes les 25 secondes (adapté mobile)
+      ExécuteThreadPrincipal(()=>{
+      	m_nPingTimer = TimerSys(SendPing, 25000, 1)
+      })
+     type : 458752
+   -
+     name : SendPing
+     procedure_id : 1786007324805540722
+     type_code : 12
+     code : |1-
+      procédure SendPing()
+      
+      jsonPing est un JSON
+      jsonPing.type	= WS_TYPE_PING
+      jsonPing.t		= DateHeureSys()
+      
+      renvoyer SendMessage(jsonPing)
+     type : 458752
+   -
+     name : SendJoinMessage
+     procedure_id : 1786007393525099525
+     type_code : 12
+     code : |1-
+      procédure SendJoinMessage(sUsername est une chaîne ansi) : booléen
+      
+      SI gGestionnaireMessages <> Null ALORS
+      	// Utiliser le gestionnaire pour envoyer le join
+      	gGestionnaireMessages.EnvoyerJoin(sUsername)
+      	RENVOYER Vrai
+      SINON
+      	// Méthode de fallback
+      	jsonMessage est un JSON
+      	jsonMessage.type	= WS_TYPE_JOIN
+      	jsonMessage.user	= sUsername
+      
+      	RENVOYER SendMessage(jsonMessage)
+      FIN
+     type : 458752
+   -
+     name : OnSocketReceive
+     procedure_id : 1786007891742404870
+     type_code : 12
+     code : |1-
+      procédure OnSocketReceive(sData est une chaîne = "")
+      
+      // Si pas de données en paramètre, essayer de les récupérer
+      
+      
+      SI sData <> "" ALORS
+      	WriteLogMobile("Message WebSocket reçu: " + sData)
+      
+      	// Utiliser le gestionnaire de messages avec Pattern Strategy
+      	SI gGestionnaireMessages <> Null ALORS
+      		SI PAS gGestionnaireMessages:TraiterMessageRecu(sData) ALORS
+      			WriteLogMobile("Erreur traitement message WebSocket")
+      		FIN
+      	SINON
+      		WriteLogMobile("Gestionnaire de messages non initialisé")
+      	FIN
+      
+      	// Appeler également le callback utilisateur pour compatibilité
+      	SI m_CallbackOnMessage <> Null ALORS
+      
+      		QUAND EXCEPTION DANS
+      			jsonMessage est un JSON = JSONVersVariant(sData)
+      			ExécuteFonction(m_CallbackOnMessage, (jsonMessage))
+      		FAIRE
+      			WriteLogMobile("Erreur parsing message pour callback: " + ExceptionInfo())
+      		fin
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : OnSocketClose
+     procedure_id : 1786008596117074779
+     type_code : 12
+     code : |1+
+      procédure OnSocketClose()
+      WriteLogMobile("WebSocket fermé")
+      
+      m_bConnected = Faux
+      StopPing()
+      
+      // Appeler le callback utilisateur
+      SI m_CallbackOnDisconnect <> Null ALORS
+      	ExécuteFonction(m_CallbackOnDisconnect)
+      FIN
+      
+      // Tentative de reconnexion automatique si pas en mode background
+      SI PAS m_bBackgroundMode ALORS
+      	ScheduleReconnect()
+      FIN
+     type : 458752
+   -
+     name : ScheduleReconnect
+     procedure_id : 1786008737851093333
+     type_code : 12
+     code : |1-
+      procédure ScheduleReconnect()
+      
+      SI m_bReconnecting OU m_nReconnectAttempts >= m_nMaxReconnectAttempts ALORS
+      	retour
+      FIN
+      
+      m_bReconnecting = Vrai
+      m_nReconnectAttempts++
+      
+      WriteLogMobile("Programmation reconnexion #" + m_nReconnectAttempts + " dans " + m_nReconnectDelay + "ms")
+      
+      // Programmer la reconnexion avec délai croissant
+      nDelay est un entier = m_nReconnectDelay * m_nReconnectAttempts
+      TimerSys(AttemptReconnect, nDelay, 1)
+     type : 458752
+   -
+     name : AttemptReconnect
+     procedure_id : 1786008896764920879
+     type_code : 12
+     code : |1+
+      procédure AttemptReconnect()
+      WriteLogMobile("Tentative de reconnexion #" + m_nReconnectAttempts)
+      
+      SI Connect(m_sURL, m_sToken) ALORS
+      	WriteLogMobile("Reconnexion réussie")
+      SINON
+      	WriteLogMobile("Échec de reconnexion")
+      	m_bReconnecting = Faux
+      	
+      	// Programmer une nouvelle tentative si possible
+      	SI m_nReconnectAttempts < m_nMaxReconnectAttempts ALORS
+      		ScheduleReconnect()
+      	FIN
+      FIN
+     type : 458752
+   -
+     name : Connect
+     procedure_id : 1786009175942382228
+     type_code : 12
+     code : |1+
+      procédure Connect(sURL est une chaîne, sToken est une chaîne) : booléen
+      
+      // Vérifier la connectivité réseau
+      SI PAS gConfig.CanConnect() ALORS
+      	m_sLastError = MSG_ERR_WIFI_REQUIRED
+      	RENVOYER Faux
+      FIN
+      
+      // Déconnecter si déjà connecté
+      SI m_bConnected ALORS
+      	Disconnect()
+      FIN
+      
+      m_sURL			= sURL
+      m_sToken		= sToken
+      m_sLastError	= ""
+      
+      // Construire l'URL avec le token
+      sFullURL est une chaîne = m_sURL + "?token=" + URLEncode(m_sToken)
+      
+      WriteLogMobile("Tentative de connexion WebSocket: " + sFullURL)
+      
+      
+      
+      	// Extraire le serveur et le port de l'URL
+      	sServeur	est une chaîne
+      	nPort		est un entier
+      	sChemin		est une chaîne
+      	sURL_Sans_Protocole	est une chaîne
+      
+      	SI Position(sFullURL, "wss://") = 1 ALORS
+      		// WebSocket sécurisé
+      		sURL_Sans_Protocole		= Droite(sFullURL, Taille(sFullURL) - 6)
+      		nPos				est un entier	= Position(sURL_Sans_Protocole, "/")
+      		SI nPos > 0 ALORS
+      			sServeur	= Gauche(sURL_Sans_Protocole, nPos - 1)
+      			sChemin		= Droite(sURL_Sans_Protocole, Taille(sURL_Sans_Protocole) - nPos + 1)
+      		SINON
+      			sServeur	= sURL_Sans_Protocole
+      			sChemin		= "/ws"
+      		FIN
+      		nPort = 443
+      	SINON
+      		// WebSocket non sécurisé (test local)
+      		SI Position(sFullURL, "ws://") = 1 ALORS
+      			sURL_Sans_Protocole  = Droite(sFullURL, Taille(sFullURL) - 5)
+      		SINON
+      			sURL_Sans_Protocole = sFullURL
+      		FIN
+      
+      		nPos est un entier = Position(sURL_Sans_Protocole, "/")
+      		SI nPos > 0 ALORS
+      			sServeur	= Gauche(sURL_Sans_Protocole, nPos - 1)
+      			sChemin		= Droite(sURL_Sans_Protocole, Taille(sURL_Sans_Protocole) - nPos + 1)
+      		SINON
+      			sServeur	= sURL_Sans_Protocole
+      			sChemin		= "/ws"
+      		FIN
+      		nPort = 8000
+      	FIN
+      
+      	// Ajouter le token au chemin
+      	SI Position(sChemin, "?") > 0 ALORS
+      		sChemin += "&token=" + URLEncode(m_sToken)
+      	SINON
+      		sChemin += "?token=" + URLEncode(m_sToken)
+      	FIN
+      
+      
+      	SI pas SocketExiste("chat") alors
+      	{
+      		// Connexion WebSocket selon l'environnement
+      		SI EnModeTest() OU Position(sFullURL, "ws://") = 1 ALORS
+      			// Mode test local ou WebSocket non sécurisé
+      
+      			ThreadExécute("ChatConnect",threadContexteGlobal,CWebSocket:ThreadConnect,(sServeur),(nPort),(sChemin))
+      
+      			// Crée la notification à afficher pendant la lecture du morceau de musique
+      			Notif est une Notification
+      			Notif.Titre			= "connecter"
+      			// Interdiction de masquer la notification
+      			Notif.Supprimable	= Faux
+      			//ThreadPersistant("ChatConnect",Notif,thpAppareilConnecté)
+      
+      
+      			//WebSocketClientConnecte("chat", WebSocketClientConnecte_Callback, sServeur, nPort, sChemin)
+      					// Mode production avec SSL
+      			SINON
+      			WebSocketClientConnecteSSL("chat", WebSocketClientConnecte_Callback, sServeur, nPort, sChemin)
+      		FIN
+      
+      		SI ErreurInfo()  ALORS
+      			m_sLastError = "Échec de connexion WebSocket: " + ErreurInfo()
+      			WriteLogMobile("Échec connexion WebSocket: " + ErreurInfo())
+      			RENVOYER Faux
+      		FIN
+      
+      	}
+      
+      	WriteLogMobile("Connexion WebSocket initiée vers: " + sServeur + ":" + nPort + sChemin)
+      	RENVOYER Vrai
+      
+     type : 458752
+   -
+     name : OnSocketError
+     procedure_id : 1786009772944613569
+     type_code : 12
+     code : |1-
+      procédure OnSocketError()
+      
+      sError est une chaîne = ErreurInfo()
+      WriteLogMobile("Erreur WebSocket: " + sError)
+      
+      m_sLastError	= sError
+      m_bConnected	= Faux
+      
+      // Appeler le callback utilisateur
+      SI m_CallbackOnError <> Null ALORS
+      	ExécuteFonction(m_CallbackOnError, (sError))
+      FIN
+      
+      // Programmer une reconnexion
+      ScheduleReconnect()
+     type : 458752
+   -
+     name : WebSocketClientConnecte_Callback
+     procedure_id : 1786026403058054359
+     type_code : 12
+     code : |1-
+      procédure GLOBAL WebSocketClientConnecte_Callback(nEvenement est un entier, sMessage est une chaîne)
+      
+      
+      SELON nEvenement
+      	CAS SocketOuverture:
+      		WriteLogMobile("WebSocket: Connexion ouverte")
+      		SI gWebSocket <> Null ALORS
+      			gWebSocket:OnSocketConnect()
+      		FIN
+      
+      	CAS SocketMessage:
+      		WriteLogMobile("WebSocket: Message reçu: " + sMessage)
+      		SI gWebSocket <> Null ALORS
+      			gWebSocket:OnSocketReceive(sMessage)
+      		FIN
+      
+      	CAS SocketFermeture:
+      		WriteLogMobile("WebSocket: Connexion fermée")
+      		SI gWebSocket <> Null ALORS
+      			gWebSocket:OnSocketClose()
+      		FIN
+      
+      	CAS SocketErreur:
+      		WriteLogMobile("WebSocket: Erreur - " + sMessage)
+      		SI gWebSocket <> Null ALORS
+      			gWebSocket:OnSocketError()
+      		FIN
+      FIN
+     type : 458752
+   -
+     name : SendChatMessage
+     procedure_id : 1786106242271940964
+     type_code : 12
+     code : |1+
+      procédure SendChatMessage(sFrom est une chaîne ansi, sText est une chaîne ANSI, tabPiecesJointes est un tableau de PieceJointe = []) : booléen
+      
+      SI gGestionnaireMessages <> Null ALORS
+      	// Utiliser le gestionnaire pour créer et envoyer le message
+      	si tabPiecesJointes.Occurrence=0 alors
+      	{
+      		gGestionnaireMessages:EnvoyerMessageTexte(sText)
+      	}sinon{
+      		gGestionnaireMessages:EnvoyerMessageTexte(sText, tabPiecesJointes)
+      	}
+      
+      	RENVOYER Vrai
+      SINON
+      	// Méthode de fallback
+      	jsonMessage est un JSON
+      	jsonMessage.type	= WS_TYPE_MESSAGE
+      	jsonMessage.from	= sFrom
+      	jsonMessage.text	= sText
+      
+      	RENVOYER SendMessage(jsonMessage)
+      FIN
+     type : 458752
+   -
+     name : ThreadConnect
+     procedure_id : 1789435219904037288
+     type_code : 12
+     code : |1-
+      procédure GLOBAL ThreadConnect(sServeur,nPort,sChemin)
+      
+      WebSocketClientConnecteSSL("chat", WebSocketClientConnecte_Callback, sServeur, nPort, sChemin)
+     type : 458752
+  properties :
+   -
+     name : GetLastError
+     identifier : 0x18c9608a029f1f2b
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique GetLastError() : chaîne ANSI
+         
+         renvoyer m_sLastError
+        type : 1966080
+     template_refs : []
+   -
+     name : IsConnected
+     identifier : 0x18c9609e02a06f4e
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique IsConnected() : booléen
+         
+         renvoyer m_bConnected
+        type : 1966080
+     template_refs : []
+   -
+     name : SetOnMessageCallback
+     identifier : 0x18c960ee02a3a81c
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique SetOnMessageCallback(Valeur est procédure)
+         
+         m_CallbackOnMessage=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : SetOnConnectCallback
+     identifier : 0x18c9610202a4f765
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique SetOnConnectCallback(Valeur est procédure)
+         
+         m_CallbackOnConnect=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : SetOnDisconnectCallback
+     identifier : 0x18c9611402a73d86
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique SetOnDisconnectCallback() : procédure
+         
+         renvoyer m_CallbackOnDisconnect
+        type : 1966080
+      -
+        code : |1-
+         procédure publique SetOnDisconnectCallback(Valeur est procédure)
+         
+         m_CallbackOnDisconnect=Valeur
+        type : 2031616
+     template_refs : []
+   -
+     name : SetOnErrorCallback
+     identifier : 0x18c9612002aa6aa1
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique SetOnErrorCallback(Valeur est procédure)
+         
+         m_CallbackOnError=Valeur
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : HgAAAB4AAADXPUOq6bQdTI/fs1mC0I6nimWl2G84EsAbne5i32IM05uoRA==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x18c929ef00f7d1d2
+  internal_properties : HgAAAB4AAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : HgAAAB4AAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

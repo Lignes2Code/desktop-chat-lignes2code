@@ -1,0 +1,143 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : GestionnaireMessages
+ major_version : 30
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x18c93f6301ca9f9e
+ internal_properties : HgAAAB4AAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      GestionnaireMessages est une Classe
+      	m_mapStrategies		est un tableau associatif de IMessageStrategy
+      	m_sCleChiffrement	est une chaîne ANSI
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1786028421693546398
+     type_code : 27
+     code : |1+
+      procédure Constructeur(sCleChiffrement est une chaîne ANSI = "")
+      m_sCleChiffrement = GenererCleSHA256_Base64(sCleChiffrement)
+      InitialiserStrategies()
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1786028421693611934
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : InitialiserStrategies
+     procedure_id : 1786029035874406551
+     type_code : 12
+     code : |1+
+      procédure InitialiserStrategies()
+      // Enregistrement des strategies par défaut
+      EnregistrerStrategy(allouer JoinMessageStrategy)
+      EnregistrerStrategy(allouer LeaveMessageStrategy)
+      EnregistrerStrategy(allouer TextMessageStrategy(m_sCleChiffrement))
+      EnregistrerStrategy(allouer UsersListStrategy)
+      EnregistrerStrategy(allouer ErrorMessageStrategy)
+      //EnregistrerStrategy(allouer TypingMessageStrategy())
+     type : 458752
+   -
+     name : EnregistrerStrategy
+     procedure_id : 1786029134658676687
+     type_code : 12
+     code : |1-
+      procédure EnregistrerStrategy(strategy est IMessageStrategy)
+      m_mapStrategies[strategy:ObtenirType()] <- strategy
+     type : 458752
+   -
+     name : TraiterMessageRecu
+     procedure_id : 1786063202352378013
+     type_code : 12
+     code : |1-
+      procédure TraiterMessageRecu(LOCAL sMessageJSON est une chaîne ANSI)
+      
+      jsonMessage		est un JSON
+      sTypeMessage	est une chaîne ANSI
+      strategy		est IMessageStrategy dynamique
+      jsonMessage = ChaîneVersJSON(sMessageJSON)
+      
+      
+      sTypeMessage = jsonMessage.type
+      
+      SI sTypeMessage="" ALORS
+      	WriteLogMobile("Type de message manquant")
+      	RENVOYER Faux
+      FIN
+      
+      // Récupérer la strategy appropriée
+      SI m_mapStrategies[sTypeMessage].vide =Faux ALORS
+      	strategy <- m_mapStrategies[sTypeMessage]
+      	RENVOYER strategy.TraiterMessage(jsonMessage)
+      SINON
+      	WriteLogMobile(ChaîneConstruit("Type de message non géré: %1", sTypeMessage))
+      	RENVOYER Faux
+      FIN
+     type : 458752
+   -
+     name : EnvoyerMessageTexte
+     procedure_id : 1786063816532779180
+     type_code : 12
+     code : |1+
+      procédure EnvoyerMessageTexte(sTexte est une chaîne ANSI, tabPiecesJointes est un tableau de PieceJointe= [])
+      
+      jsonMessage		est un JSON
+      sTexteChiffre	est une chaîne ANSI
+      
+      jsonMessage.type = "message"
+      jsonMessage.from = gAuth.GetUsername
+      
+      // Chiffrement du texte si non vide
+      SI PAS sTexte..Vide ALORS
+      	sTexteChiffre		= Chiffrer_AES256(sTexte, m_sCleChiffrement)
+      	jsonMessage.text	= "ENC:" + sTexteChiffre
+      SINON
+      	jsonMessage.text = ""
+      FIN
+      
+      sMessage est une chaine ANSI = jsonMessage.VersChaîne()
+      
+      // Envoi via WebSocket
+      EnvoyerViaWebSocket(sMessage)
+     type : 458752
+   -
+     name : EnvoyerJoin
+     procedure_id : 1786070422198933909
+     type_code : 12
+     code : |1+
+      procédure EnvoyerJoin(sNomUtilisateur est une chaîne ansi)
+      jsonMessage est un JSON
+      jsonMessage.type	= "join"
+      jsonMessage.user	= sNomUtilisateur
+      smessage est une chaine ANSI = jsonMessage.VersChaîne()
+      
+      EnvoyerViaWebSocket(smessage)
+      
+      
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : HgAAAB4AAADXPUOq6bQdTI/fs1mC0I6nimWl2G84EsAbne5i32IM05uoRA==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x18c93f6101c7980c
+  internal_properties : HgAAAB4AAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : HgAAAB4AAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

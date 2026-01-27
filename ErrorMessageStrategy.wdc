@@ -1,0 +1,107 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : ErrorMessageStrategy
+ major_version : 30
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x18c3d17601907f87
+ internal_properties : HgAAAB4AAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      ErrorMessageStrategy est une Classe
+      	hérite IMessageStrategy
+      	
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1784500182131507079
+     type_code : 27
+     code : |1+
+      procédure Constructeur()
+      
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1784500182131572615
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : ValiderMessage
+     procedure_id : 1785974077460942856
+     type_code : 12
+     code : |1-
+      procédure ValiderMessage(LOCAL jsonMessage est un JSON) : booléen
+      bExiste est un booléen = Faux
+      
+      POUR i = 1 _À_ jsonMessage..Membre.Occurrence
+      	bExiste = (jsonMessage..Membre[i]..Nom = "")
+      	SI bExiste = Vrai ALORS
+      		RENVOYER bExiste
+      	FIN
+      FIN
+      
+      
+      RENVOYER bExiste
+     type : 458752
+   -
+     name : ObtenirType
+     procedure_id : 1785974176245279138
+     type_code : 12
+     code : |1+
+      procédure ObtenirType(): chaîne
+      RENVOYER "error"
+      
+     type : 458752
+   -
+     name : TraiterMessage
+     procedure_id : 1785974317979232843
+     type_code : 12
+     code : |1-
+      procédure TraiterMessage(LOCAL jsonMessage est un JSON) : booléen
+      SI PAS ValiderMessage(jsonMessage) ALORS RENVOYER Faux
+      
+      sTypeErreur est une chaîne = jsonMessage.message
+      
+      SELON sTypeErreur
+      	CAS "username_taken"
+      	//AfficherErreur("Ce nom d'utilisateur est déjà pris")
+      	CAS "room_full"
+      	//AfficherErreur("Le groupe est plein")
+      	CAS "maintenance"
+      	//AfficherErreur("Serveur en maintenance")
+      	CAS "rate_limited"
+      	//AfficherErreur("Trop de requêtes, veuillez patienter")
+      	CAS "slow_down"
+      	//AfficherErreur("Ralentissez l'envoi de messages")
+      	CAS "kicked"
+      		//AfficherErreur("Vous avez été expulsé du groupe")
+      	//DeconnecterWebSocket()
+      	AUTRE CAS
+      		//AfficherErreur(ChaîneConstruit("Erreur: %1", sTypeErreur))
+      FIN
+      
+      RENVOYER Vrai
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : HgAAAB4AAADXPUOq6bQdTI/fs1mC0I6nimWl2G84EsAbne5i32IM05uoRA==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x18c3d174018d77d7
+  internal_properties : HgAAAB4AAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : HgAAAB4AAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,442 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : CAuth
+ major_version : 30
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x18c3d13a01519631
+ internal_properties : HgAAAB4AAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      CAuth est une Classe
+      {
+      	// Propriétés privées
+      	PRIVÉ
+      		m_sToken		est une chaîne
+      		m_sUsername		est une chaîne ansi
+      		m_sRole			est une chaîne
+      		m_dtExpiration	est une dateheure
+      		m_sLastError	est une chaîne
+      		m_bConnected	est un booléen
+      		m_sEmail 		est une chaine
+      
+      }
+      
+      
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1784499924429346353
+     type_code : 27
+     code : |1+
+      procédure Constructeur()
+      
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1784499924429411889
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : SaveTokenToStorage
+     procedure_id : 1784570585250653748
+     type_code : 12
+     code : |1+
+      procédure SaveTokenToStorage()
+      // Utiliser les paramètres pour le stockage sécurisé
+      SauveParamètre("auth_token", m_sToken)
+      SauveParamètre("auth_username", m_sUsername)
+      SauveParamètre("auth_role", m_sRole)
+      SauveParamètre("auth_email", m_sEmail)
+      SauveParamètre("auth_expiration", m_dtExpiration.VersChaîne())
+     type : 458752
+   -
+     name : LoadTokenFromStorage
+     procedure_id : 1784570774229258819
+     type_code : 12
+     code : |1+
+      procédure LoadTokenFromStorage(){
+      	m_sToken	= ChargeParamètre("auth_token", "")
+      	m_sUsername	= ChargeParamètre("auth_username", "")
+      	m_sRole		= ChargeParamètre("auth_role", "")
+      	m_sEmail 	= ChargeParamètre("auth_email", "")
+      
+      	sExpiration est une chaîne = ChargeParamètre("auth_expiration", "")
+      	SI sExpiration <> "" ALORS
+      		m_dtExpiration = sExpiration.VersDate(maskDateInternet)
+      	FIN
+      
+      	SI m_sToken <> "" ET HasValidToken() ALORS
+      		m_bConnected = Vrai
+      	SINON
+      		ClearToken()
+      	FIN
+      
+      
+      }
+      
+     type : 458752
+   -
+     name : ClearToken
+     procedure_id : 1784570877308563396
+     type_code : 12
+     code : |1+
+      procédure ClearToken(){
+      	m_sToken		= ""
+      	m_sUsername		= ""
+      	m_sRole			= ""
+      	m_dtExpiration	= "00000000000000"
+      	m_bConnected	= Faux
+      	m_sEmail		= ""
+      
+      }
+      
+     type : 458752
+   -
+     name : HasValidToken
+     procedure_id : 1784571461424120643
+     type_code : 12
+     code : |1+
+      procédure HasValidToken(){
+      	// Vérifier si on a un token
+      	SI m_sToken = "" ALORS
+      		renvoyer  Faux
+      	FIN
+      	// Vérifier l'expiration
+      	SI m_dtExpiration <= DateHeureSys() ALORS
+      		ClearToken()
+      		RENVOyer Faux
+      	FIN
+      
+      	RENVOYER Vrai
+      
+      
+      }
+      
+     type : 458752
+   -
+     name : Logout
+     procedure_id : 1784572745619444445
+     type_code : 12
+     code : |1-
+      procédure Logout()
+      
+      // Effacer les données
+      ClearToken()
+     type : 458752
+   -
+     name : ClearTokenFromStorage
+     procedure_id : 1784572827223907261
+     type_code : 12
+     code : |1+
+      procédure ClearTokenFromStorage(){
+      	sFichierAuth est une chaîne = fRepExe() + [fSep] + "auth.ini"
+      
+      	// Supprimer les paramètres d'authentification
+      	SupprimeParamètre("auth_token")
+      	SupprimeParamètre("auth_username")
+      	SupprimeParamètre("auth_role")
+      	SupprimeParamètre("auth_expiration")
+      }
+      
+     type : 458752
+   -
+     name : GetAuthorizationHeader
+     procedure_id : 1784578286130905034
+     type_code : 12
+     code : |1+
+      procédure GetAuthorizationHeader():CHAINE {
+      	SI HasValidToken() ALORS
+      		renvoyer  "Authorization: Bearer " + m_sToken
+      	SINON
+      		RENVOYER ""
+      	FIN
+      
+      }
+      
+     type : 458752
+   -
+     name : GetUserInfo
+     procedure_id : 1784578565303845196
+     type_code : 12
+     code : |1+
+      procédure GetUserInfo():JSON {
+      	jsonUser est un JSON
+      
+      	SI IsConnected() ALORS
+      		jsonUser.username	= m_sUsername
+      		jsonUser.role		= m_sRole
+      		jsonUser.token		= m_sToken
+      		jsonUser.expires_at	= DateHeureSys()
+      		jsonUser.connected	= Vrai
+      	SINON
+      		jsonUser.connected = Faux
+      	FIN
+      
+      	renvoyer  jsonUser
+      }
+      
+     type : 458752
+   -
+     name : IsConnected
+     procedure_id : 1784578737102641744
+     type_code : 12
+     code : |1-
+      procédure IsConnected()
+      
+      RENVOYER m_bConnected et HasValidToken()
+     type : 458752
+   -
+     name : Login
+     procedure_id : 1784579089299610381
+     type_code : 12
+     code : |1-
+      procédure Login(sUsername est une chaîne , sPassword est une chaîne):booléen {
+      
+      
+      
+      	// Créer et envoyer le formulaire OAuth2
+      	// Construire manuellement les données du formulaire OAuth2
+      	sFormData	est une chaîne	ansi = "grant_type=password&username=" + sUsername + "&password=" + sPassword + "&scope="
+      
+      	// Créer la requête HTTP
+      	cMaRequête est un httpRequête
+      	cMaRequête.URL				= gConfig.GetAuthTokenURL()
+      	cMaRequête.Méthode			= httpPost
+      	cMaRequête.Contenu			= sFormData
+      	cMaRequête.ContentType		= "application/x-www-form-urlencoded"
+      	cMaRequête.Timeout			= gConfig.GetTimeout()
+      
+      	// Ajouter les en-têtes
+      	cMaRequête.Entête["Accept"]	= "application/json"
+      
+      	WriteLogMobile("Envoi données login: " + sFormData)
+      
+      	cRéponse est un httpRéponse = HTTPEnvoie(cMaRequête)
+      
+      	WriteLogMobile("Code réponse: " + cRéponse.CodeEtat + " - Contenu: " + cRéponse.Contenu)
+      
+      	SI ErreurDétectée() OU cRéponse.CodeEtat >= 400 ALORS
+      		m_sLastError = "Erreur réseau: " + ErreurInfo() + " (Code: " + cRéponse.CodeEtat + ")"
+      		WriteLogMobile("Erreur login HTTP: " + m_sLastError)
+      		WriteLogMobile("Réponse serveur: " + cRéponse.Contenu)
+      		RENVOYER Faux
+      	FIN
+      
+      	// Parser la réponse JSON
+      	jsonReponse est un JSON = cRéponse.Contenu
+      	SI ErreurDétectée() ALORS
+      		m_sLastError = MSG_ERR_JSON_PARSE + ": " + ErreurInfo()
+      		WriteLogMobile("Erreur parsing JSON login: " + cRéponse.Contenu)
+      		RENVOYER Faux
+      	FIN
+      
+      	// Vérifier si la connexion a réussi
+      	SI jsonReponse.access_token = "" ALORS
+      		m_sLastError = jsonReponse.detail
+      		SI m_sLastError = "" ALORS
+      			m_sLastError = MSG_ERR_AUTH_FAILED
+      		FIN
+      		WriteLogMobile("Échec login: " + m_sLastError)
+      		RENVOYER Faux
+      	FIN
+      
+      	// Sauvegarder les informations d'authentification
+      	m_sToken	= jsonReponse.access_token
+      	m_sUsername	= jsonReponse.username
+      	m_sRole		= jsonReponse.role
+      	m_sEmail	= jsonReponse.email
+      
+      	// Calculer la date d'expiration (expires_in est en secondes)
+      	nExpiresIn est un entier = jsonReponse.expires_in
+      	m_dtExpiration	= DateSys() + HeureSys()
+      	m_dtExpiration.Seconde +=nExpiresIn
+      
+      
+      	m_bConnected	= Vrai
+      
+      	// Sauvegarder dans le stockage sécurisé
+      	SaveTokenToStorage()
+      
+      	WriteLogMobile("Login réussi pour: " + m_sUsername + " (rôle: " + m_sRole + ")")
+      	RENVOYER Vrai
+      
+      
+      
+      }
+     type : 458752
+   -
+     name : Register
+     procedure_id : 1784581657691765454
+     type_code : 12
+     code : |1+
+      procédure Register( sEmail est une chaîne, sPassword est une chaîne):booléen{
+      	// Préparer les données JSON pour l'inscription
+      	jsonData est un JSON
+      	jsonData.password	= sPassword
+      	jsonData.email		= sEmail
+      	jsonData.full_name	= ExtraitChaîne(sEmail,1,"@")
+      
+      	sData		est une chaîne	= jsonData
+      
+      	// Effectuer la requête POST avec la nouvelle syntaxe
+      	cMaRequête	est un httpRequête
+      	cMaRequête.URL			= gConfig.GetAuthRegisterURL()
+      	cMaRequête.Méthode		= httpPost
+      	cMaRequête.Contenu		= sData
+      	cMaRequête.ContentType	= "application/json"
+      	cMaRequête.Timeout		= gConfig.GetTimeout()
+      
+      	cRéponse est un httpRéponse = HTTPEnvoie(cMaRequête)
+      
+      	SI ErreurDétectée() OU cRéponse.CodeEtat >= 400 ALORS
+      		m_sLastError = "Erreur réseau: " + ErreurInfo()
+      		RENVOYER Faux
+      	FIN
+      
+      	// Parser la réponse JSON
+      	jsonReponse est un JSON = cRéponse.Contenu
+      	SI ErreurDétectée() ALORS
+      		m_sLastError = MSG_ERR_JSON_PARSE + ": " + ErreurInfo()
+      		RENVOYER Faux
+      	FIN
+      
+      	// Vérifier si l'inscription a réussi
+      	SI jsonReponse.message = "" ALORS
+      		m_sLastError = jsonReponse.detail
+      		SI m_sLastError = "" ALORS
+      			m_sLastError = "Erreur lors de l'inscription"
+      		FIN
+      		RENVOYER Faux
+      	FIN
+      
+      	RENVOYER Vrai
+      }
+      
+     type : 458752
+   -
+     name : VerifyTokenOnServer
+     procedure_id : 1784582117253373330
+     type_code : 12
+     code : |1+
+      procédure VerifyTokenOnServer():booléen{
+      
+      	SI PAS HasValidToken() ALORS
+      		RENVOYER Faux
+      	FIN
+      
+      	// Effectuer la requête GET avec la nouvelle syntaxe
+      	cMaRequête est un httpRequête
+      	cMaRequête.URL						= gConfig.GetAuthVerifyURL()
+      	cMaRequête.Méthode					= httpGet
+      	cMaRequête.Timeout					= gConfig.GetTimeout()
+      
+      	// Ajouter les en-têtes
+      	cMaRequête.Entête["Authorization"]	= "Bearer " + m_sToken
+      	cMaRequête.Entête["Accept"]			= "application/json"
+      
+      	cRéponse est un httpRéponse = HTTPEnvoie(cMaRequête)
+      
+      	SI ErreurDétectée() OU cRéponse.CodeEtat >= 400 ALORS
+      		WriteLogMobile("Erreur verify token HTTP: " + ErreurInfo())
+      		RENVOYER Faux
+      	FIN
+      
+      	// Parser la réponse JSON
+      	jsonReponse est un JSON = cRéponse.Contenu
+      	SI ErreurDétectée() ALORS
+      		WriteLogMobile("Erreur parsing JSON verify: " + cRéponse.Contenu)
+      		RENVOYER Faux
+      	FIN
+      
+      	// Vérifier la validité
+      	RENVOYER (jsonReponse.valid = Vrai)
+      }
+      
+     type : 458752
+  properties :
+   -
+     name : GetAccessToken
+     identifier : 0x18c6967e020c071d
+     type_code : 103
+     p_codes :
+      -
+        code : |1+
+         procédure GetAccessToken()
+         renvoyer m_sToken
+        type : 1966080
+      -
+        code : |1-
+         
+        type : 2031616
+     template_refs : []
+   -
+     name : GetLastError
+     identifier : 0x18c696ca020d2e57
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique GetLastError() : chaîne ANSI
+         
+         renvoyer m_sLastError
+        type : 1966080
+     template_refs : []
+   -
+     name : GetEmail
+     identifier : 0x18c8131c02c4a98a
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique GetEmail() : chaîne ANSI
+         
+         renvoyer m_sEmail
+        type : 1966080
+     template_refs : []
+   -
+     name : GetUsername
+     identifier : 0x18c92b1401234c7d
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique GetUsername() : chaîne ANSI
+         
+         renvoyer m_sUsername
+        type : 1966080
+     template_refs : []
+   -
+     name : SetDisplayName
+     identifier : 0x18d0ff560664420f
+     type_code : 103
+     p_codes :
+      -
+        code : |1-
+         procédure publique SetDisplayName(Valeur est chaîne ANSI)
+         
+         m_sUsername=Valeur
+        type : 2031616
+     template_refs : []
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : HgAAAB4AAADXPUOq6bQdTI/fs1mC0I6nimWl2G84EsAbne5i32IM05uoRA==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x18c3d139014e9026
+  internal_properties : HgAAAB4AAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : HgAAAB4AAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ

@@ -1,0 +1,82 @@
+#To edit and compare internal_properties, use WINDEV integrated tools.
+#Internal properties refer to the properties of controls in windows, reports, etc.
+info :
+ name : users
+ major_version : 30
+ minor_version : 0
+ type : 4
+ description : ""
+ subtype : 0
+class :
+ identifier : 0x18c9103501405380
+ internal_properties : HgAAAB4AAAB2/vstTMCJbS/hlxjFxirSqKvCUuv8YxgpWyl7S3iA
+ code_elements :
+  type_code : 10
+  p_codes :
+   -
+     code : |1+
+      users est une Classe
+      	m_tabList est une tableau de chaîne
+      PRIVÉ GLOBAL
+      	mg_pclUsers est un users dynamique
+      fin
+     type : 131072
+  procedures :
+   -
+     name : Constructeur
+     procedure_id : 1785976547069481856
+     type_code : 27
+     code : |1+
+      procédure prive Constructeur()
+      
+     type : 589824
+   -
+     name : Destructeur
+     procedure_id : 1785976547069547392
+     type_code : 28
+     code : |1+
+      procédure Destructeur()
+      
+     type : 655360
+   -
+     name : AjouterUser
+     procedure_id : 1785976637263947426
+     type_code : 12
+     code : |1+
+      procédure AjouterUser(sUser est une chaîne ANSI)
+      m_tabList.Ajoute(sUser)
+     type : 458752
+   -
+     name : getInstance
+     procedure_id : 1785976688803763398
+     type_code : 12
+     code : |1-
+      procédure publique global getInstance()
+      
+      SectionCritiqueDébut()
+      SI ::mg_pclUsers=Null ALORS
+      	::mg_pclUsers = allouer users
+      FIN
+      SectionCritiqueFin()
+      
+      RENVOYER ::mg_pclUsers
+     type : 458752
+   -
+     name : maj
+     procedure_id : 1785976860602495379
+     type_code : 12
+     code : |1+
+      procédure maj()
+      DemandeMiseAJourUI()
+     type : 458752
+  procedure_templates : []
+  property_templates : []
+ code_parameters :
+  internal_properties : HgAAAB4AAADXPUOq6bQdTI/fs1mC0I6nimWl2G84EsAbne5i32IM05uoRA==
+  original_name : Classe1
+resources :
+ string_res :
+  identifier : 0x18c91031013d469f
+  internal_properties : HgAAAB4AAACm76HWfKGWp33VjXInA4cRlqArlgTTA862QGt72W2ld5Y=
+custom_note :
+ internal_properties : HgAAAB4AAABtB9HWVzrXO2+4NDRVK0vmzaNKrCKqH1DBX30lMmGZ
