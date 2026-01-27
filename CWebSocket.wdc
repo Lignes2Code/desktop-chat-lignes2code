@@ -177,7 +177,7 @@ class :
       
       // Appeler le callback utilisateur
       SI m_CallbackOnConnect <> Null ALORS
-      	ExécuteFonction(m_CallbackOnConnect)
+      	m_CallbackOnConnect()
       FIN
      type : 458752
    -
@@ -274,7 +274,8 @@ class :
       
       // Appeler le callback utilisateur
       SI m_CallbackOnDisconnect <> Null ALORS
-      	ExécuteFonction(m_CallbackOnDisconnect)
+      	m_CallbackOnDisconnect()
+      	
       FIN
       
       // Tentative de reconnexion automatique si pas en mode background
