@@ -260,9 +260,7 @@ procedure_set :
       // Afficher un toast pour l'utilisateur
       ToastAffiche(sMessageErreur, toastLong)
       
-      // Optionnel : vibrer pour alerter
-      //Vibrer(300)
-      VibrationDéclenche(1s)
+      
       
       WriteLogMobile("Erreur affichée: " + sMessageErreur)
      type : 458752
@@ -275,24 +273,6 @@ procedure_set :
       // Afficher que l'utilisateur est en train de taper
       //LIB_IndicateurSaisie..Texte		= ChaîneConstruit("%1 est en train d'écrire...", sUtilisateur)
       //LIB_IndicateurSaisie..Visible	= Vrai
-     type : 458752
-   -
-     name : EnvoyerViaWebSocket
-     procedure_id : 1786064439303116782
-     type_code : 15
-     code : |1-
-      procédure EnvoyerViaWebSocket(sMessageJSON est une chaîne ANSI)
-      
-      
-      SI gWebSocket <> Null ET gWebSocket.IsConnected ALORS
-      	SI PAS gWebSocket:SendMessage(ChaîneVersJSON(sMessageJSON)) ALORS
-      		WriteLogMobile("Erreur envoi WebSocket: " + gWebSocket.GetLastError)
-      		AfficherErreur("Erreur d'envoi du message")
-      	FIN
-      SINON
-      	WriteLogMobile("WebSocket non connecté")
-      	AfficherErreur("Connexion au chat perdue")
-      FIN
      type : 458752
    -
      name : TraiterPieceJointe
@@ -335,55 +315,6 @@ procedure_set :
       
       }
       
-     type : 458752
-   -
-     name : TelechargerFichier
-     procedure_id : 1788621052938598917
-     type_code : 15
-     code : |1+
-      procédure TelechargerFichier(pj est PieceJointe)
-      
-      SI pj:name= "" OU pj:DataUrl = "" ALORS
-      	AfficherErreur("Fichier invalide")
-      	retour
-      FIN
-      
-      
-      	sRepDestination est une chaîne = frepexe() + "/ChatApp/Downloads/"
-      
-      	// Créer le répertoire si nécessaire
-      	SI PAS fRépExiste(sRepDestination) ALORS
-      		fRépCrée(sRepDestination)
-      	FIN
-      
-      	// Nettoyer le nom de fichier
-      	sNomFichier		est une chaîne	= NettoyerNomFichier(pj:name)
-      
-      	// Chemin complet du fichier
-      	sCheminFichier	est une chaîne	= sRepDestination + sNomFichier
-      
-      	// Gérer les doublons de noms
-      	sCheminFichier = GererDoublonsFichier(sCheminFichier)
-      
-      	// Afficher l'indicateur de téléchargement
-      	AfficherIndicateurConnexion("Téléchargement de " + sNomFichier + "...")
-      
-      	// Décoder les données selon le format
-      	SI Gauche(pj:DataUrl, 5) = "data:" ALORS
-      		// Format Data URL : data:type/subtype;base64,donnees
-      		TelechargerDepuisDataURL(pj:DataUrl, sCheminFichier)
-      	SINON SI Gauche(pj:DataUrl, 4) = "http" ALORS
-      		// URL HTTP/HTTPS
-      		TelechargerDepuisURL(pj:DataUrl, sCheminFichier)
-      	SINON
-      		// Données brutes en Base64
-      		TelechargerDepuisBase64(pj:DataUrl, sCheminFichier)
-      	FIN
-      	// Notifier le succès
-      	//AfficherToast("Fichier téléchargé : " + ExtractNomFichier(sCheminFichier), TOAST_LONG)
-      	WriteLogMobile("Fichier téléchargé: " + sCheminFichier)
-      
-      // Proposer d'ouvrir le fichier
      type : 458752
    -
      name : NettoyerNomFichier
@@ -469,6 +400,95 @@ procedure_set :
       ExécuteThreadPrincipal(()=>{
       	OuvreFille(FEN_Chat)
       })
+     type : 458752
+   -
+     name : EnvoyerViaWebSocket
+     procedure_id : 1835443424868356878
+     type_code : 15
+     code : |1-
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      //EnvoyerViaWebSocket (<sMessageJSON> est chaîne)
+      //
+      // Paramètres :
+      //	sMessageJSON (chaîne ANSI) : <indiquez ici le rôle de sMessageJSON>
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // <Indiquez ici un exemple d'utilisation>
+      //
+      procédure EnvoyerViaWebSocket(sMessageJSON est une chaîne ANSI)
+      
+      
+      SI gWebSocket <> Null ET gWebSocket.IsConnected ALORS
+      	SI PAS gWebSocket:SendMessage(ChaîneVersJSON(sMessageJSON)) ALORS
+      		WriteLogMobile("Erreur envoi WebSocket: " + gWebSocket.GetLastError)
+      		AfficherErreur("Erreur d'envoi du message")
+      	FIN
+      SINON
+      	WriteLogMobile("WebSocket non connecté")
+      	AfficherErreur("Connexion au chat perdue")
+      FIN
+     type : 458752
+   -
+     name : TelechargerFichier
+     procedure_id : 1835443772760723209
+     type_code : 15
+     code : |1+
+      // Résumé : <indiquez ici ce que fait la procédure>
+      // Syntaxe :
+      // TelechargerFichier ()
+      //
+      // Paramètres :
+      //	Aucun
+      // Valeur de retour :
+      // 	Aucune
+      //
+      // Exemple :
+      // <Indiquez ici un exemple d'utilisation>
+      //
+      procédure TelechargerFichier(pj est PieceJointe)
+      
+      SI pj:name= "" OU pj:DataUrl = "" ALORS
+      	AfficherErreur("Fichier invalide")
+      	RETOUR
+      FIN
+      
+      
+      sRepDestination est une chaîne = fRepExe() + "/ChatApp/Downloads/"
+      
+      // Créer le répertoire si nécessaire
+      SI PAS fRepExiste(sRepDestination) ALORS
+      	fRepCrée(sRepDestination)
+      FIN
+      
+      // Nettoyer le nom de fichier
+      sNomFichier		est une chaîne	= NettoyerNomFichier(pj:name)
+      
+      // Chemin complet du fichier
+      sCheminFichier	est une chaîne	= sRepDestination + sNomFichier
+      
+      // Gérer les doublons de noms
+      sCheminFichier = GererDoublonsFichier(sCheminFichier)
+      
+      // Afficher l'indicateur de téléchargement
+      AfficherIndicateurConnexion("Téléchargement de " + sNomFichier + "...")
+      
+      // Décoder les données selon le format
+      SI Gauche(pj:DataUrl, 5) = "data:" ALORS
+      	// Format Data URL : data:type/subtype;base64,donnees
+      	//TelechargerDepuisDataURL(pj:DataUrl, sCheminFichier)
+      SINON SI Gauche(pj:DataUrl, 4) = "http" ALORS
+      	// URL HTTP/HTTPS
+      	//TelechargerDepuisURL(pj:DataUrl, sCheminFichier)
+      SINON
+      	// Données brutes en Base64
+      	//TelechargerDepuisBase64(pj:DataUrl, sCheminFichier)
+      FIN
+      // Notifier le succès
+      //AfficherToast("Fichier téléchargé : " + ExtractNomFichier(sCheminFichier), TOAST_LONG)
+      WriteLogMobile("Fichier téléchargé: " + sCheminFichier)
      type : 458752
   procedure_templates : []
   property_templates : []
