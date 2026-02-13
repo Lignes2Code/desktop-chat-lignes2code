@@ -201,6 +201,12 @@ project :
      internal_properties : HgAAAB4AAACSaMre7VrSjatLBXIXhPTNjPP7ox3rFNKn9olSD+oihkaoLmEu3Dgn/C2XYSHfmw33fw==
      physical_name : .\FEN_UserConfig.wdw
      type : 2
+   -
+     name : FI_message
+     identifier : 0x498d6f8200c22473
+     internal_properties : HgAAAB4AAADkYszo14ykRxEnM0YPLCugmJvXT3Vd/OhKzIkm1SRoiIyyoYM+ghCnRufRL/fpkQfxcQ==
+     physical_name : .\FI_message.wdw
+     type : 8
   other_elements : []
   array_of_analysis : []
   net_assemblies : []

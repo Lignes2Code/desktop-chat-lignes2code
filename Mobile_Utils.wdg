@@ -184,7 +184,7 @@ procedure_set :
       		sMessageFormat est une chaîne = "[" + HeureVersChaine(HeureSys(), "HH:MM") + "] *** " + sMessage + " ***"
       		notif est une Notification
       		notif.Titre = sMessageFormat
-      		notif.Ajoute()
+      		
       	}
       
       

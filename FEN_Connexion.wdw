@@ -607,7 +607,7 @@ window :
       FIN
       
       // Lancer l'inscription en arrière-plan
-      ThreadExécute("registration", threadNormal, "CallbackRegistration",SAI_Email, SAI_Password)
+      ThreadExécute("registration", threadSécurisé, CallbackRegistration,SAI_Email, SAI_Password)
      type : 458752
    -
      name : PerformLogin
@@ -640,7 +640,7 @@ window :
       	RETOUR
       FIN
       
-      ThreadExécute("LOGIN",threadNormal,CallbackLogin,SAI_Email,SAI_Password)
+      ThreadExécute("LOGIN",threadSécurisé,CallbackLogin,SAI_Email,SAI_Password)
      type : 458752
    -
      name : CallbackLogin
@@ -691,6 +691,49 @@ window :
       	// Remettre le focus sur le mot de passe
       	SAI_Password = ""
       	DonneFocus(SAI_Password)
+      FIN
+     type : 458752
+   -
+     name : CallbackRegistration
+     procedure_id : 1841238916296621675
+     type_code : 14
+     code : |1+
+      //!
+      //! @brief <indiquez ici ce que fait la procédure>
+      //!
+      //!
+      procédure CallbackRegistration(sEmail est une chaîne, sPassword est une chaîne)
+      
+      bSuccess est un booléen = gAuth.Register(sEmail, sPassword)
+      
+      // Retour au thread principal
+      ExécuteThreadPrincipal(OnRegistrationResult,bSuccess, sEmail)
+      
+     type : 458752
+   -
+     name : OnRegistrationResult
+     procedure_id : 1841239178289819146
+     type_code : 14
+     code : |1+
+      procédure OnRegistrationResult(bSuccess est un booléen, sEmail est une chaîne)
+      
+      
+      ShowLoading(Faux)
+      
+      SI bSuccess ALORS
+      	// Afficher un toast de succès
+      	ToastAffiche("Inscription réussie ! Vous pouvez maintenant vous connecter.")
+      
+      	// Basculer vers le mode connexion
+      	SwitchToLoginMode()
+      
+      	// Garder l'email rempli
+      	SAI_Email		= sEmail
+      	SAI_Password	= ""
+      	DonneFocus(SAI_Password)
+      SINON
+      	// Afficher l'erreur
+      	ToastAffiche(gAuth.GetLastError)
       FIN
      type : 458752
   procedure_templates : []

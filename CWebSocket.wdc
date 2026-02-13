@@ -403,7 +403,7 @@ class :
       		SI EnModeTest() OU Position(sFullURL, "ws://") = 1 ALORS
       			// Mode test local ou WebSocket non sécurisé
       
-      			ThreadExécute("ChatConnect",threadContexteGlobal,CWebSocket:ThreadConnect,(sServeur),(nPort),(sChemin))
+      			ThreadExécute("ChatConnect",threadSécurisé,CWebSocket:ThreadConnect,(sServeur),(nPort),(sChemin))
       
       			// Crée la notification à afficher pendant la lecture du morceau de musique
       			Notif est une Notification
