@@ -10,7 +10,7 @@ info :
 window :
  name : FEN_Chat
  identifier : 0x29788a3d007bd8a5
- internal_properties : HgAAAB4AAABSxYDRNKo1nRPCPSb/p9ZlJ595yEG6J4kwOQSIXQpwC+P6pEPp+9wSCDfnZnDIL50zK7cjPZMNnlX9Plwo7L/1ScslWQDJtHmJOaTH2Q5GRJ4hwdY/p/FQPHcnjrECZ5k6XM30HWGMZ+Ys3A9rSfnSAT71IpD/kOQFafUnicllFQFsnjjaouOMXCpzvijWeNb/EnFZF9YCb5Dx/ugJAhSQxPM7KQSETHfzZd+bHx3ciu5GpYpxiXzCdFbFnIJaEerr/DCOBNpWOiLO9LvSi/mfC2to2YnLVzWzQPIcb75c/UP6IDE6fuCRBYOIO9vshajEp/mGcIZE0Q/33Mf+fYomLt+R3lyvMfiy0k5OK3QARRVPLr+uxxzqiS5msGopjADLB8JgmA9/CK46pEZBQJdiasDJQd17gG6mgMO5VuEz/imgQDTf2mTZKgJa3F0cbawKasSD/3EM/DWM8g2CaDBTLWYNuFf6XvQLWvP2/UutyWbMBacg84J/JA4mjoVKV5HY9TziWRRHQP82hpk8PwlwwyEgr8YWdN+JH/Jdaj1lhU2U+pk0d+nFqoYes9elSVPk3kjxXcbJEBS0ZA6t6f1hMAjLMqX+7F2J6Nlr0HdxdMqjhFnc55eegLpRJjmpUutarF+ixkrBEOpWpHQg7cXYVZWj2DOuKQ==
+ internal_properties : HgAAAB4AAADPQj1MnwEKfMovisuSuNsqdEzeb9zZzKSbxqFlAG+VoIAvMdZ0bmmdm6h4h5OpwLrcFAhCXAqmRSw6+5lfwcQKzkja3INMOeycks0QQLe/TRteVk2iAt4v48zsu/RHzCqvITIbuOQB5n2piZSmiiYTwn82bVc+UStEJsLUTLI62kolL/MhfSSbs7eIa++bLa8w22pA/tF7UpPm8+0EP8FJHaQU0EMvdQ7yetxgkoYB//d/rq0YoBVlV/dm/WV78ktUDakRI+V/salTCRAxVNYMYGB99KzmdNSqaYuFzt+9WigXlWRVBY1IbKSxlMIVPjHtuFoZ/wHFUI5w3UZ9/gulr1gaRfvISJEbSzelQk0pbDp0yxJZHHdHKo/HF5ESpR/oJOdLowRqddsXgaHkrSDpk+niuFTM38/HYSQY9UJQmUK5aRvm01vO33fPp2AZbrMzE31aFhqzJWJ57wiFdS1OJl92z07DJT1ADzipqLDG4B8Fzm5vrDm0acNrQXB/mFAZtn0hGFWGAbxzQySHxILvQKa9AnGjB3AeZLeQpfIuzDLxXyS/7GS+U/+HCm4+Nr5xY8V02ENMlenZGVHorraYyaFskUQfC3rqiXqKNxDe5184EcxvFLpDZd92+dQO9w5/SfwFYfd0Rd9buR+Lkp43MuoIY6YztA==
  properties :
   width : 1024
   height : 768
@@ -109,11 +109,14 @@ window :
      type_code : 3
      p_codes :
       -
-        code : |1-
-         // Version 1
-         // Description 
-         // Champ de saisie pour un texte multiligne simple, sans mise en forme
         type : 14
+        enabled : false
+      -
+        type : 15
+        enabled : false
+      -
+        type : 16
+        enabled : false
       -
         type : 276
         enabled : false
@@ -129,10 +132,13 @@ window :
       -
         type : 339
         enabled : false
+      -
+        type : 17
+        enabled : false
   -
     name : ZR_Messages
     identifier : 0x298d71f503a0b712
-    internal_properties : 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
+    internal_properties : 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
     properties :
      x : 24
      y : 24
@@ -236,7 +242,7 @@ window :
   type_code : 1
   p_codes :
    -
-     code : |1-
+     code : |1+
       PROCEDURE MaFenêtre()
       STMessage est une Structure
       	sFrom		est une chaîne
@@ -251,13 +257,15 @@ window :
       gListeUtilisateurs	est un tableau de chaîne
       bMessagesScrolling	est un booléen	= Faux
       nDernierMessageID	est un entier	= 0
+      
+      Evénement(GestionShiftEnter	, "*.*", WM_KEYDOWN)
    -
      code : |1+
       // Vérifier l'authentification
       SI PAS gAuth.IsConnected() ALORS
       	ToastAffiche("Session expirée - redirection vers la connexion")
       	OuvreFenêtreMobile(FEN_Connexion)
-      	
+      
       	RETOUR
       FIN
       
@@ -269,6 +277,7 @@ window :
       FIN
       
       InitialiserListeMessages
+      
       
      type : 34
    -
@@ -430,6 +439,26 @@ window :
       	ToastAffiche("Impossible de se connecter au chat")
       	//MasquerIndicateurConnexion()
       FIN
+     type : 458752
+   -
+     name : GestionShiftEnter
+     procedure_id : 1843111440439874625
+     type_code : 14
+     code : |1+
+      //!
+      //! @brief <indiquez ici ce que fait la procédure>
+      //!
+      //!
+      procédure GestionShiftEnter()
+      VK_RETURN	est un entier	= 0x0d
+      nTouche		est un entier	= VK_RETURN	// Touche Entrée
+      
+      // Vérifie si la touche Entrée a été appuyée
+      SI ToucheEnfoncée(nTouche) ET PAS ToucheEnfoncée(teShift) ALORS
+      	// Insérer ici le traitement à effectuer
+      	BTN_Envoyer.ExécuteTraitement(trtClic)
+      FIN
+      
      type : 458752
   procedure_templates : []
   property_templates : []
