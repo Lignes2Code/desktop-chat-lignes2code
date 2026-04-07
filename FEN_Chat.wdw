@@ -86,6 +86,7 @@ window :
          // Réactiver l'envoi
          BTN_Envoyer.Etat	= Actif
          SAI_Message.Etat	= Actif
+         SAI_Message = ""
          DonneFocus(SAI_Message)
         type : 18
       -
@@ -137,15 +138,14 @@ window :
         enabled : false
   -
     name : ZR_Messages
-    identifier : 0x298d71f503a0b712
-    internal_properties : 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
+    identifier : 0x29944bd50b909455
+    internal_properties : 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
     properties :
-     x : 24
-     y : 24
-     width : 974
-     height : 543
-     anchor : 8
-     anchor_ratio_pos_y : 0
+     x : 6
+     y : 6
+     width : 1010
+     height : 561
+     anchor : 10
      accelerator_key : 65535
      tab_order : 0
     style :
@@ -153,12 +153,12 @@ window :
     controls :
      -
        name : LIB_Expediteur
-       identifier : 0x298d723a03adc3df
-       internal_properties : HgAAAB4AAACw29TMVqQLKw4WTg8W9wdOWnr08VCe+Y/sKeVB7g9WdIpzol/+RaEt3w0ysBL793b4blhZ8Glb0lsZE1xe0JdHWO4Wyrj2s9VkNpNp4VU/ljYFvCfsxRTQa61svxOARUYswb74LJQ7LTIjOnHfKmFGQkDLsuIH91PVSg2DYMXPwVnL/jF8hJ33lVtbajguqOl4ul3o0QkNrI6r2Dc98QcAL+0iLN7x/bichOTGo/qUAMGbT4z2UFSkMZFXFORv/dvHVfX9M7Ev/ZCOkD6ZlB/uevDUc+rFn7YCXwz7S65f1ZP53lZkORp9DidMmDKdH+s1CVWFzN6LFmHk6rQLA0bitLz/tLyZpxPijeWQenv7AR+03D9Hisa5wFJpjeS8uWn6ZLigz5FshlP/Iai4eQD96yn3Vme2kkhV3MCXLGzwzDsk+qZ13D58TpqSZtWSeWXyRoiuzYMsrlyRqQ==
+       identifier : 0x299454ee0bd81ac1
+       internal_properties : HgAAAB4AAAADZwi6k09Q43BghfRFb1RevRdic+o7z5BLAnUJeYX6zMjJvhiq5rIYTHtBLmDEQLCF6mHw8z9lNwAMFWqy5O2iUWIxCWhOoGXqXRseHkz6aH7apH8s/+3a4H8b4pzAUlcMWymut+rwV7wb58tbz3+MPwEg+YKGRgMIWwwtItRVGK9p7qww8dvGcMpLxG7rWOOlV2UJRIxHaEGegW9KLGQmDqQs5AA/8fFKZ+WynxFauce1yBAeD8afspP4ihcDYZ60xCfHxNb6AGBQreYHcXLP33+MIlHUFRTttM0xR5ylKgCWOzKHyYCrsbvk78cxrJV+3j1cEEdO2EZXmOUnhXPNYKAHBmNU+CZoWzSPwiGypYzPE5eU312ditdYKJNS98lv6MJRoPi2pyHBN+7h5ZhwGDYjkN1aPmKSn0wWMmzkZe1jHEth+RCrRC2DOdLXfA68hLuSog==
        properties :
-        x : 119
-        y : 11
-        width : 100
+        x : 6
+        y : 6
+        width : 211
         height : 20
         anchor : 8
         tab_stop : 0
@@ -170,15 +170,14 @@ window :
         p_codes : []
      -
        name : LIB_Message
-       identifier : 0x298d723a03afc3fe
-       internal_properties : HgAAAB4AAAAm5hyvkzHC2Hk3Bdt4iXHyln1bjRvvb05xUcPKpa02WRqhgTnJMysEbdU+9AnQIzLK2SrmWMXjGIjcpv9GY/7AF8LNNdp+pEmuKiJjq+KsvQ71nzpb3O3I+xHfv062YHsZJQUfcQuEjteNRqoqE3YhwhqmXPy/4lSvcIYQnCPIaRrFkyWgxSDB+oR61qMl0UcxIoM6wiAbNSeTKF6E7RcLGucA5kEbgcpIcmmj36vbrlq4/zY8ii7tZQDjXkqKUoMWHH/rNZeNtK41eB7ltVayWXeC8Uy34dM65NLFqfM+CeJQLno84TYkxqQI4iAiHjHCMMcHQkhVBYXr/oDzGMV2/VuNVvq/LfA8NIsG5F7ca+YJehunnia8ni/zbxpJhNFD95YQa60G/TFygFWhvn8x5sJJ2O0OtslJq8D9vmcZlr5lzH6hgOUIrnr3LaqQewCWHQeGHnxAZA4=
+       identifier : 0x2994553f0bf15833
+       internal_properties : HgAAAB4AAAD6P3FIyBik2NBWgy95dSEbrsve9WNVIOf00DY1G2IU0eY30IG4D5oDJVkMsRjBkZL0rHZ7NtRro+ANQqonVC3Xycf5nuL58zsgExlCEAmAfZyynDoh85W1vpAVPpq3DflBkAnJcI8hEgQi5STC9ekt/sdIAmBkNce5C4mt/dvZzHU4i6WmvSKPAaKZT7M0HAd8RjAA5oAtMAyhpN3RH2bWKVj7C9hh9Egj50srzuS0jGcKTDr/Fqo++JV4MzgsyctyT2k/h8PIo27andkaWsyOL6RQFGCNIdUzbl0KPp8rrUALt5wWZA5241lcov7CgDTOcfnOpdAu98arhm5IboV+TkOZEk6f5GU4V2J4HaKkapLyV8FtPnf4cptqPwjppeb/pYiTRVVint77jJrlw918eQzSq1cCg+ZnZIsch7mkuDI9O6N6qg1fswTpw3LoJjqGqSf4/ZY=
        properties :
-        x : 29
-        y : 31
-        width : 100
+        x : 6
+        y : 32
+        width : 969
         height : 20
-        anchor : 8
-        anchor_ratio_pos_y : 0
+        anchor : 10
         tab_stop : 0
         take_focus : 0
        style : {}
@@ -210,9 +209,8 @@ window :
         type : 230
         enabled : false
       -
-        code : |1-
-         
         type : 241
+        enabled : false
       -
         type : 340
         enabled : false
@@ -343,6 +341,7 @@ window :
       stMessage.nID			+= nDernierMessageID
       stMessage.bIsOwn		= (sFrom = gAuth.GetUsername)
       
+      
       gListeMessages.Ajoute(stMessage)
       
       nIndex est un entier =  ZR_Messages.AjouteLigne()
@@ -351,7 +350,10 @@ window :
       
       // Remplir les champs de la ligne
       ZR_Messages[nIndex].LIB_Expediteur	= stMessage.sFrom
+      tailleTexte est un reel = TexteHauteur(ZR_Messages[nIndex].LIB_Message,stMessage.sText,tMultiligne)
       ZR_Messages[nIndex].LIB_Message		= stMessage.sText
+      
+      ConfigurerHauteurMessage(nIndex, tailleTexte)
       ConfigurerStyleMessage(nIndex,stMessage.bIsOwn)
       ZR_Messages.Position(nIndex)
      type : 458752
@@ -359,7 +361,7 @@ window :
      name : ConfigurerStyleMessage
      procedure_id : 1835431798387081642
      type_code : 14
-     code : |1-
+     code : |1+
       // Résumé : <indiquez ici ce que fait la procédure>
       // Syntaxe :
       // ConfigurerStyleMessage ()
@@ -373,35 +375,35 @@ window :
       // <Indiquez ici un exemple d'utilisation>
       //
       procédure ConfigurerStyleMessage(nIndex est un entier, bIsOwn est un booléen)
-      monCadre est un Cadre
-      monCadre.Trait		= TraitContinu
-      monCadre.Epaisseur	= 5
-      monCadre.Arrondi	= 10
+      
+      
+      
+      nHauteur est un entier = ZR_Messages[nIndex].LIB_Message.Hauteur
+      ZR_Messages[nIndex]..Hauteur += nHauteur+10
+      
       
       SI bIsOwn ALORS
-      	// Message de l'utilisateur - aligné à droite
-      	//ZR_Messages[nIndex].RECT_MessageContainer.CouleurFond	= COLOR_PRIMARY
-      	//ZR_Messages[nIndex].RECT_MessageContainer.Ancrage		= ancreDroite
+      
+      
       	ZR_Messages[nIndex].LIB_Expediteur						= "moi"
       	ZR_Messages[nIndex].LIB_Expediteur.Visible				= Vrai
       	ZR_Messages[nIndex].LIB_Expediteur.Couleur				= VertClair
       	ZR_Messages[nIndex].LIB_Expediteur.PoliceGras			= Vrai
       	ZR_Messages[nIndex].LIB_Message.Couleur					= RVB(255, 255, 255)
       	ZR_Messages[nIndex].LIB_Message.CadrageHorizontal		= chDroite
-      	monCadre.Couleur										= VertClair
+      
       SINON
-      	// Message d'un autre utilisateur - aligné à gauche
-      	//ZR_Messages[nIndex].RECT_MessageContainer.CouleurFond	= RVB(224, 224, 224)
-      	//ZR_Messages[nIndex].RECT_MessageContainer.Ancrage		= ancreHautGauche
+      
+      
       	ZR_Messages[nIndex].LIB_Message.CadrageHorizontal		= chGauche
       	ZR_Messages[nIndex].LIB_Message.Couleur					= RVB(255, 255, 255)
       	ZR_Messages[nIndex].LIB_Expediteur.Visible				= Vrai
       	ZR_Messages[nIndex].LIB_Expediteur.Couleur				= BleuClair
       	ZR_Messages[nIndex].LIB_Expediteur.PoliceGras			= Vrai
-      	monCadre.Couleur										= BleuClair
-      
       
       FIN
+      
+      
      type : 458752
    -
      name : ConnecterAuChat
@@ -459,6 +461,19 @@ window :
       	BTN_Envoyer.ExécuteTraitement(trtClic)
       FIN
       
+     type : 458752
+   -
+     name : ConfigurerHauteurMessage
+     procedure_id : 1861338903701614100
+     type_code : 14
+     code : |1+
+      //!
+      //! @brief <indiquez ici ce que fait la procédure>
+      //!
+      //!
+      procédure ConfigurerHauteurMessage(nIndex,tailleTexte)
+      
+      ZR_Messages[nIndex].LIB_Message..Hauteur = tailleTexte
      type : 458752
   procedure_templates : []
   property_templates : []

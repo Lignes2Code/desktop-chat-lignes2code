@@ -67,7 +67,8 @@ class :
       
       
       // Affichage du message
-      AfficherMessage(sExpediteur, sTexte, sHorodatage)
+      ExécuteThreadPrincipal(AfficherMessage, sExpediteur, sTexte, sHorodatage)
+      //AfficherMessage(sExpediteur, sTexte, sHorodatage)
       
       RENVOYER Vrai
      type : 458752

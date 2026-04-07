@@ -226,6 +226,7 @@ procedure_set :
       sMessageFormat est une chaîne ansi = ChaîneConstruit("[%1] %2: %3", sHorodatage, sExpediteur, sTexte)
       //ListeAjoute(LST_Messages, sMessageFormat)
       WriteLogMobile(sMessageFormat)
+      WriteLogMobile(sMessageFormat)
       // Scroll automatique vers le bas
       //LST_Messages..Occurrence = ListeOccurrence(LST_Messages)
       
